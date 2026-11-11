@@ -1,0 +1,22 @@
+{
+  "holdings": [
+    {
+      "symbol": "AAPL",
+      "quantity": 10,
+      "price": 250.0,
+      "asset_type": "stock"
+    },
+    {
+      "symbol": "MSFT",
+      "quantity": 5,
+      "price": 400.0,
+      "asset_type": "stock"
+    },
+    {
+      "symbol": "VOO",
+      "quantity": 8,
+      "price": 500.0,
+      "asset_type": "etf"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+gemini_model: gemini-3.5-flash-lite
+market_cache_ttl: 1800
+retrieval_k: 5
+retrieval_max_distance: 0.90
+chunk_size: 500
+chunk_overlap: 100

@@ -1,0 +1,13 @@
+.venv/
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+src/rag/faiss_index_backup/
+__pycache__/
+
+.pytest_cache/
+.coverage
+htmlcov/
+*.pyc
+.DS_Store

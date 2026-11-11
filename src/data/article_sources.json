@@ -1,0 +1,868 @@
+[
+  {
+    "id": "investing_001",
+    "title": "Introduction to Investing",
+    "category": "investing_basics",
+    "publisher": "SEC Investor.gov",
+    "url": "https://www.investor.gov/introduction-investing",
+    "review_status": "excluded"
+  },
+  {
+    "id": "investing_002",
+    "title": "Investment Products",
+    "category": "investing_basics",
+    "publisher": "SEC Investor.gov",
+    "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products",
+    "review_status": "excluded"
+  },
+  {
+    "id": "retirement_001",
+    "title": "Designated Roth Accounts",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/retirement-plans-faqs-on-designated-roth-accounts",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_003",
+    "title": "Learn About Investment Options",
+    "category": "investing_basics",
+    "publisher": "SEC Investor.gov",
+    "url": "https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/learn-about-investment-options",
+    "review_status": "excluded"
+  },
+  {
+    "id": "investing_004",
+    "title": "Investing on Your Own",
+    "category": "investing_basics",
+    "publisher": "SEC Investor.gov",
+    "url": "https://www.investor.gov/introduction-investing/getting-started/investing-your-own",
+    "review_status": "excluded"
+  },
+  {
+    "id": "investing_005",
+    "title": "Mutual Funds",
+    "category": "investing_basics",
+    "publisher": "SEC Investor.gov",
+    "url": "https://www.investor.gov/introduction-investing/investing-basics/investment-products/mutual-funds-and-exchange-traded-funds-etfs/mutual-funds",
+    "review_status": "excluded"
+  },
+  {
+    "id": "budget_001",
+    "title": "Your Money, Your Goals",
+    "category": "budgeting",
+    "publisher": "Consumer Financial Protection Bureau",
+    "url": "https://www.consumerfinance.gov/consumer-tools/educator-tools/your-money-your-goals/",
+    "content_type": "resource_directory",
+    "review_status": "excluded"
+  },
+  {
+    "id": "banking_001",
+    "title": "Money Smart",
+    "category": "banking",
+    "publisher": "Federal Deposit Insurance Corporation",
+    "url": "https://www.fdic.gov/consumer-resource-center/money-smart",
+    "content_type": "resource_directory",
+    "review_status": "excluded"
+  },
+  {
+    "id": "credit_001",
+    "title": "Understand Your Credit Score",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/credit-reports-and-scores/understand-your-credit-score/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "credit_002",
+    "title": "What Is a Credit Card Interest Rate?",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/what-is-a-credit-card-interest-rate-what-does-apr-mean-en-44/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "credit_003",
+    "title": "How Credit Card Interest Is Calculated",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/how-does-my-credit-card-company-calculate-the-amount-of-interest-i-owe-en-51/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "credit_004",
+    "title": "How Credit Card Interest Rates Are Determined",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/when-does-a-credit-card-company-decide-what-interest-rate-to-offer-me-on-a-credit-card-en-9/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "credit_005",
+    "title": "Paying Credit Card Balances and Interest",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/if-i-pay-off-my-credit-card-balance-when-it-is-due-is-the-company-allowed-to-charge-me-interest-for-that-month-en-48/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "credit_006",
+    "title": "Know Before You Owe: Credit Cards",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/data-research/credit-card-data/know-you-owe-credit-cards/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "credit_007",
+    "title": "Credit Card Key Terms",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/credit-cards/answers/key-terms/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_002",
+    "title": "Required Minimum Distributions FAQs",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/retirement-plan-and-ira-required-minimum-distributions-faqs",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_003",
+    "title": "IRA Distributions and Withdrawals",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/retirement-plans-faqs-regarding-iras-distributions-withdrawals",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_004",
+    "title": "IRA Frequently Asked Questions",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/retirement-plans-faqs-regarding-iras",
+    "review_status": "candidate"
+  },
+  {
+    "id": "saving_001",
+    "title": "An Essential Guide to Building an Emergency Fund",
+    "category": "saving",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/an-essential-guide-to-building-an-emergency-fund/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "saving_002",
+    "title": "Managing Your Money, Part 2",
+    "category": "budgeting",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/paying-for-college/financial-intuition/managing-your-money-part-2/",
+    "review_status": "needs_review"
+  },
+  {
+    "id": "retirement_005",
+    "title": "401(k) and Profit-Sharing Plan Contribution Limits",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_006",
+    "title": "Choosing a Retirement Plan: 401(k)",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/choosing-a-retirement-plan-401k-plan",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_007",
+    "title": "401(k) Plan Qualification Requirements",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-sponsor/401k-plan-qualification-requirements",
+    "review_status": "excluded"
+  },
+  {
+    "id": "retirement_008",
+    "title": "401(k) General Distribution Rules",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/401k-resource-guide-plan-participants-general-distribution-rules",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_009",
+    "title": "401(k) Plan Overview",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-sponsor/401k-plan-overview",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_010",
+    "title": "Are You Covered by an Employer Retirement Plan?",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/are-you-covered-by-an-employers-retirement-plan",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_011",
+    "title": "Retirement Plan FAQs Regarding Contributions",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/retirement-plan-faqs-regarding-contributions",
+    "review_status": "excluded"
+  },
+  {
+    "id": "retirement_012",
+    "title": "Retirement Topics: Contributions",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-contributions",
+    "review_status": "candidate"
+  },
+  {
+    "id": "saving_003",
+    "title": "Your Savings",
+    "category": "saving",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/savings/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "budget_002",
+    "title": "Budgeting",
+    "category": "budgeting",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/budgeting/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "budget_003",
+    "title": "Financial Well-Being",
+    "category": "financial_planning",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/financial-well-being/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "credit_008",
+    "title": "Credit Reports and Scores",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/credit-reports-and-scores/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "debt_001",
+    "title": "Debt Collection",
+    "category": "debt",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/debt-collection/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "debt_002",
+    "title": "Student Loans",
+    "category": "debt",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/student-loans/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "banking_002",
+    "title": "Bank Accounts and Services",
+    "category": "banking",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/bank-accounts/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "mortgage_001",
+    "title": "Buying a House",
+    "category": "mortgage",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/owning-a-home/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "mortgage_002",
+    "title": "Mortgage",
+    "category": "mortgage",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/mortgages/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "credit_009",
+    "title": "Credit Cards",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/credit-cards/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "retirement_013",
+    "title": "Retirement Topics: IRA Contribution Limits",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-ira-contribution-limits",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_014",
+    "title": "Traditional and Roth IRAs",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/traditional-and-roth-iras",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_015",
+    "title": "Roth Comparison Chart",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/roth-comparison-chart",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_016",
+    "title": "Retirement Topics: Beneficiary",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-beneficiary",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_017",
+    "title": "Retirement Topics: Vesting",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-vesting",
+    "review_status": "candidate"
+  },
+  {
+    "id": "credit_010",
+    "title": "Disputing Errors on Credit Reports",
+    "category": "credit",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/credit-reports-and-scores/answers/key-terms/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "debt_003",
+    "title": "Debt Collection Answers",
+    "category": "debt",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/debt-collection/answers/key-terms/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "saving_004",
+    "title": "Savings Answers",
+    "category": "saving",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/savings/answers/key-terms/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "banking_003",
+    "title": "Bank Account Answers",
+    "category": "banking",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/bank-accounts/answers/key-terms/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "mortgage_003",
+    "title": "Mortgage Answers",
+    "category": "mortgage",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/mortgages/answers/key-terms/",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_006",
+    "title": "Stocks vs. ETFs vs. Mutual Funds",
+    "category": "investing_basics",
+    "publisher": "Fidelity",
+    "url": "https://www.fidelity.com/learning-center/trading-investing/stocks-vs-etfs-vs-mutual-funds",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_007",
+    "title": "Bonds vs. Bond Funds",
+    "category": "investing_basics",
+    "publisher": "Fidelity",
+    "url": "https://www.fidelity.com/learning-center/investment-products/mutual-funds/bond-vs-bond-funds",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_008",
+    "title": "Index Funds",
+    "category": "investing_basics",
+    "publisher": "Charles Schwab",
+    "url": "https://www.schwab.com/schwab-index-funds-etfs",
+    "review_status": "excluded"
+  },
+  {
+    "id": "investing_009",
+    "title": "The Basics of Selecting Investments",
+    "category": "investing_basics",
+    "publisher": "FINRA",
+    "url": "https://syndication.finra.org/content/basics-selecting-investments",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_010",
+    "title": "Why Diversify?",
+    "category": "diversification",
+    "publisher": "Fidelity",
+    "url": "https://www.fidelity.com/learning-center/investment-products/mutual-funds/why-diversify",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_011",
+    "title": "What Is Portfolio Diversification?",
+    "category": "diversification",
+    "publisher": "Fidelity",
+    "url": "https://www.fidelity.com/learning-center/investment-products/mutual-funds/diversification",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_012",
+    "title": "3 Steps to Diversify Your Investment Portfolio",
+    "category": "diversification",
+    "publisher": "Fidelity",
+    "url": "https://www.fidelity.com/learning-center/wealth-management-insights/how-to-build-a-diversified-investment-portfolio",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_013",
+    "title": "Portfolio Management Checklist",
+    "category": "portfolio_management",
+    "publisher": "Charles Schwab",
+    "url": "https://www.schwab.com/learn/story/portfolio-management-checklist",
+    "review_status": "excluded"
+  },
+  {
+    "id": "investing_014",
+    "title": "How to Build a Portfolio with ETFs",
+    "category": "portfolio_management",
+    "publisher": "Fidelity",
+    "url": "https://www.fidelity.com/learning-center/trading-investing/how-to-build-etf-portfolio",
+    "review_status": "candidate"
+  },
+  {
+    "id": "investing_015",
+    "title": "3 Ways to Build an All-ETF Portfolio",
+    "category": "portfolio_management",
+    "publisher": "Charles Schwab",
+    "url": "https://www.schwab.com/learn/story/3-ways-to-build-all-etf-portfolio",
+    "review_status": "excluded"
+  },
+  {
+    "id": "retirement_019",
+    "title": "Rollovers of Retirement Plan and IRA Distributions",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/rollovers-of-retirement-plan-and-ira-distributions",
+    "review_status": "candidate"
+  },
+  {
+    "id": "retirement_020",
+    "title": "Topic 413 - Rollovers from Retirement Plans",
+    "category": "retirement",
+    "publisher": "IRS",
+    "url": "https://www.irs.gov/taxtopics/tc413",
+    "review_status": "candidate"
+  },
+  {
+    "id": "budgeting_001",
+    "title": "Learning About Budgets",
+    "category": "budgeting",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/educator-tool/youth-financial-education/teach/activities/learning-about-budgets/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "budgeting_002",
+    "title": "Creating a Monthly Household Budget",
+    "category": "budgeting",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/educator-tool/youth-financial-education/teach/activities/creating-monthly-household-budget/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "budgeting_003",
+    "title": "Analyzing Budgets",
+    "category": "budgeting",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/educator-tool/youth-financial-education/teach/activities/analyzing-budgets/",
+    "review_status": "excluded"
+  },
+  {
+    "id": "bulk_001",
+    "title": "Payday Loans",
+    "category": "debt",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/payday-loans",
+    "review_status": "excluded"
+  },
+  {
+    "id": "bulk_002",
+    "title": "Planning for retirement",
+    "category": "financial_goals",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/retirement",
+    "review_status": "excluded"
+  },
+  {
+    "id": "bulk_003",
+    "title": "Reverse Mortgages",
+    "category": "mortgage",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/reverse-mortgages",
+    "review_status": "excluded"
+  },
+  {
+    "id": "bulk_004",
+    "title": "Getting an auto loan",
+    "category": "debt",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/auto-loans",
+    "review_status": "candidate"
+  },
+  {
+    "id": "bulk_005",
+    "title": "Access training resources",
+    "category": "financial_goals",
+    "publisher": "CFPB",
+    "url": "https://www.consumerfinance.gov/consumer-tools/educator-tools/your-money-your-goals/training-implementation",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_001",
+    "title": "Skip to main content",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/saving-and-budgeting-money",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_002",
+    "title": "Investing & Trading Education",
+    "category": "investing",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/investing-trading-education",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_003",
+    "title": "Retirement Education",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/retirement-education",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_004",
+    "title": "Retirement savings",
+    "category": "saving",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/retirement/saving-for-retirement",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_005",
+    "title": "Talking to family about money",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/talking-to-family-about-money",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_006",
+    "title": "Finance for students",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/personal-finance-for-students",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_007",
+    "title": "Managing a financial windfall",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/managing-a-financial-windfall ",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_008",
+    "title": "Gifting money and assets",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/giving-money-to-family",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_009",
+    "title": "Charitable donations",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/charitable-giving/making-charitable-donations",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_010",
+    "title": "Secrets of moderate millionaires",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/moderate-millionaires",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_011",
+    "title": "What is a savings plan?",
+    "category": "saving",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/savings-plan",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_012",
+    "title": "How to cut costs where it counts",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/common-spending-mistakes",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_013",
+    "title": "A step-by-step financial checklist",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/financial-planning-steps",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_014",
+    "title": "The power of having savings goals",
+    "category": "saving",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/identifying-savings-goals",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_015",
+    "title": "Are you a spender or a saver?",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/spending-money-or-saving-money",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_016",
+    "title": "5 small steps that can make a big impact",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/money-management",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_017",
+    "title": "6 money myths debunked",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/viewpoints/personal-finance/6-money-myths",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_018",
+    "title": "Fidelity's easy budgeting guideline",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/spending-and-saving",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_019",
+    "title": "What is discretionary income?",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/discretionary-income",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_020",
+    "title": "How to balance debt, saving, and investing",
+    "category": "investing",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/viewpoints/personal-finance/how-to-pay-off-debt",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_021",
+    "title": "Why automating savings works",
+    "category": "saving",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/automate-savings",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_022",
+    "title": "How to start saving money",
+    "category": "saving",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/how-to-start-saving-money",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_023",
+    "title": "How much to save for emergencies",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/viewpoints/personal-finance/save-for-an-emergency",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_024",
+    "title": "Do you really need a bank?",
+    "category": "budgeting",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/viewpoints/personal-finance/do-you-really-need-a-bank",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_025",
+    "title": "3 healthy habits for health savings accounts",
+    "category": "saving",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/viewpoints/personal-finance/hsa-healthy-habits",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_026",
+    "title": "6 ways busy people can help build their wealth",
+    "category": "financial_goals",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/how-to-build-wealth",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_027",
+    "title": "The debt snowball method vs. the debt avalanche method",
+    "category": "debt",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/avalanche-snowball-debt",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_028",
+    "title": "Get ready to unleash your inner investor",
+    "category": "investing",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/women-talk-money",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_029",
+    "title": "Preparing for retirement",
+    "category": "financial_goals",
+    "publisher": "www.fidelity.com",
+    "url": "https://www.fidelity.com/learning-center/personal-finance/retirement/planning-your-retirement",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_030",
+    "title": "What is a prescreened credit card offer?",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/what-is-a-prescreened-credit-card-offer-en-1",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_031",
+    "title": "Why did I get a low credit limit on a credit card?",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/why-did-i-get-a-low-credit-limit-on-a-credit-card-en-11",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_032",
+    "title": "Why do I receive so many offers for new credit cards in the mail?",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/why-do-i-receive-so-many-offers-for-new-credit-cards-in-the-mail-en-1239",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_033",
+    "title": "Do joint credit card accounts with my spouse affect my credit score?",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/do-joint-credit-card-accounts-with-my-spouse-affect-my-credit-score-en-1289",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_034",
+    "title": "Can I make issuers stop sending me credit card offers in the mail?",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/can-i-make-issuers-stop-sending-me-credit-card-offers-in-the-mail-en-1377",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_035",
+    "title": "Can the card issuer request information about my income, my age, and my Social Security Number when I apply for a credit card?",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/can-the-card-issuer-request-information-about-my-income-my-age-and-my-social-security-number-when-i-apply-for-a-credit-card-en-14",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_036",
+    "title": "I was an authorized user on my deceased relative’s credit card account. Am I liable to repay the debt?",
+    "category": "debt",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/i-was-an-authorized-user-on-my-deceased-relatives-credit-card-account-am-i-liable-to-repay-the-debt-en-1485",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_037",
+    "title": "How long can I keep a low rate on a balance transfer or other introductory rate?",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/how-long-can-i-keep-a-low-rate-on-a-balance-transfer-or-other-introductory-rate-en-15",
+    "review_status": "excluded"
+  },
+  {
+    "id": "target_038",
+    "title": "What are credit card “add-on products?”",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/what-are-credit-card-add-on-products-en-1541",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_039",
+    "title": "What is an annual percentage rate (APR) and why is it higher than the interest rate for my payday loan?",
+    "category": "debt",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/what-is-an-annual-percentage-rate-apr-and-why-is-it-higher-than-the-interest-rate-for-my-payday-loan-en-1625",
+    "review_status": "candidate"
+  },
+  {
+    "id": "target_040",
+    "title": "What should I do if I can’t pay my credit card bills?",
+    "category": "credit",
+    "publisher": "www.consumerfinance.gov",
+    "url": "https://www.consumerfinance.gov/ask-cfpb/what-should-i-do-if-i-cant-pay-my-credit-card-bills-en-1697",
+    "review_status": "candidate"
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "conversation": [
+    {
+      "question": "What is an ETF?",
+      "agent": "finance_qa",
+      "has_answer": true,
+      "source_count": 2,
+      "error": "",
+      "history_entries": 2,
+      "elapsed_seconds": 43.38
+    },
+    {
+      "question": "How does it differ from a mutual fund?",
+      "agent": "finance_qa",
+      "has_answer": true,
+      "source_count": 3,
+      "error": "",
+      "history_entries": 4,
+      "elapsed_seconds": 34.87
+    }
+  ],
+  "news_source_count": 5,
+  "market_has_prices": true,
+  "market_price_timestamp": "2026-11-05",
+  "market_retrieved_at": "2026-11-07T01:08:17.792795+00:00"
+}

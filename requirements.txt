@@ -1,0 +1,48 @@
+
+# ==========================================
+# Finnie - AI Finance Assistant
+# Capstone Project Dependencies
+# ==========================================
+
+# 1. LLM and multi-agent orchestration
+langchain-core
+langchain-google-genai
+langgraph
+
+# 2. RAG: document processing and vector search
+langchain-community
+langchain-text-splitters
+faiss-cpu
+python-frontmatter
+
+# 3. Knowledge base: article downloading and extraction
+requests
+beautifulsoup4
+trafilatura
+
+# 4. Configuration and data validation
+python-dotenv
+pydantic
+PyYAML
+
+# 5. API reliability: retries and rate limiting
+tenacity
+
+# 6. Financial data analysis
+pandas
+numpy
+
+# 7. Web interface and visualizations
+streamlit
+plotly
+
+# 8. Testing and code quality
+pytest
+pytest-cov
+
+yfinance
+langchain-huggingface
+sentence-transformers
+
+# 9. Local MCP server and protocol tests
+mcp>=1.26,<2
