@@ -13,12 +13,57 @@ from src.workflow.graph import build_graph, guarded
 from src.agents.market_symbol_resolver import resolve_symbol
 from src.agents.market_data import get_market_chart
 from src.agents.news_agent import summarize_company_news
-from src.utils.calculators import analyze_portfolio, project_goal
+from src.utils.calculators import analyze_portfolio, number, project_goal
 from src.agents.base_agent import DISCLAIMER
 
 DEFAULT_MARKET_SYMBOLS = (
     "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "COST", "SPY", "VOO",
 )
+MARKET_PRICED_ASSETS = {"stock", "etf", "mutual_fund"}
+
+
+def price_portfolio(holdings):
+    """Fetch one quote per ticker and prepare a USD valuation."""
+    periods = {}
+    for holding in holdings:
+        symbol = str(holding["symbol"] or "").strip().upper()
+        if not symbol:
+            raise ValueError("Each holding needs a ticker or label.")
+        holding["symbol"] = symbol
+        if number(holding["quantity"], f"{symbol} quantity") == 0:
+            raise ValueError(f"{symbol} quantity must be positive.")
+        if holding["asset_type"] in MARKET_PRICED_ASSETS:
+            # Mutual funds generally publish a daily price after market close.
+            periods[symbol] = "1W" if holding["asset_type"] == "mutual_fund" else "1D"
+
+    symbols = sorted(periods)
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        quotes = dict(zip(symbols, pool.map(
+            lambda symbol: get_market_chart(symbol, periods[symbol], refresh=True), symbols
+        )))
+
+    for holding in holdings:
+        quote = quotes.get(holding["symbol"]) if holding["asset_type"] in MARKET_PRICED_ASSETS else None
+        if quote is None:
+            if holding["asset_type"] == "cash":
+                holding["price"] = 1.0
+            continue
+        symbol = holding["symbol"]
+        if "error" in quote:
+            raise ValueError(f"Couldn't fetch a price for {symbol}. Check the ticker and try again.")
+        if quote["currency"] != "USD":
+            raise ValueError(f"{symbol} is quoted in {quote['currency']}. This portfolio is valued in USD.")
+        holding["price"] = quote["latest_price"]
+
+    return holdings, [
+        {
+            "Ticker": symbol,
+            "Price (USD)": quote["latest_price"],
+            "Price timestamp": quote["price_date"],
+            "Source": "Cached Yahoo Finance quote" if quote.get("stale") else "Yahoo Finance",
+        }
+        for symbol, quote in quotes.items()
+    ]
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -147,35 +192,52 @@ with st.sidebar:
 chat, portfolio, market, goals = st.tabs(["💬 Chat", "🥧 Portfolio", "📊 Market", "🎯 Goals"])
 with portfolio:
     st.subheader("Explore your holdings")
-    st.caption("Enter your own prices to see how your portfolio is allocated. For a quick tour, load the sample below.")
+    st.caption("Enter tickers and quantities. Analyze holdings fetches prices for stocks, ETFs, and mutual funds. Enter cash as a USD amount in Quantity.")
     if st.button("Load illustrative sample portfolio"):
         st.session_state.holdings=json.loads((ROOT/"src/data/sample_portfolios/sample_portfolio.json").read_text())["holdings"]
+        st.session_state.portfolio_inputs = st.session_state.holdings
+        st.session_state.portfolio_quotes = []
+        st.session_state.portfolio_sample = True
         st.session_state.pop("holdings_editor", None)
-    frame=pd.DataFrame(st.session_state.holdings, columns=["symbol","quantity","price","asset_type","expense_ratio_pct"])
+    inputs = st.session_state.setdefault("portfolio_inputs", st.session_state.holdings)
+    frame=pd.DataFrame(inputs, columns=["symbol","quantity","price","asset_type","expense_ratio_pct"])
+    frame["price"] = pd.to_numeric(frame["price"], errors="coerce").where(
+        ~frame["asset_type"].isin(MARKET_PRICED_ASSETS | {"cash"})
+    )
     edited=st.data_editor(frame, num_rows="dynamic", key="holdings_editor", hide_index=True,
         column_config={"asset_type":st.column_config.SelectboxColumn("Asset type", options=["stock","etf","bond","cash","mutual_fund","other"]),
                        "quantity":st.column_config.NumberColumn(min_value=0.0),
-                       "price":st.column_config.NumberColumn("Price per share ($)", min_value=0.0, format="$%.2f"),
+                       "price":st.column_config.NumberColumn("Manual USD price (bonds and other)", min_value=0.0, format="$%.2f"),
                        "expense_ratio_pct":st.column_config.NumberColumn("Expense ratio (%)", min_value=0.0,max_value=100.0, help="Enter 0.03 for 0.03%.")})
     if st.button("Analyze holdings", type="primary"):
         try:
-            holdings=edited.where(pd.notna(edited), None).to_dict("records")
-            # Missing expense ratios are unknown, not zero.
-            for row in holdings:
-                if pd.isna(row.get("expense_ratio_pct")): row["expense_ratio_pct"]=None
+            holdings = edited.astype(object).where(pd.notna(edited), None).to_dict("records")
+            with st.spinner("Retrieving portfolio prices…"):
+                holdings, quotes = price_portfolio(holdings)
             analyze_portfolio(holdings)
-            st.session_state.holdings=holdings
-        except ValueError as exc: st.error(str(exc))
+            st.session_state.holdings = holdings
+            st.session_state.portfolio_quotes = quotes
+            st.session_state.portfolio_sample = False
+        except ValueError as exc:
+            st.error(str(exc))
     if st.session_state.holdings:
         result=analyze_portfolio(st.session_state.holdings)
+        sample = st.session_state.get("portfolio_sample", False)
+        st.caption("Illustrative sample prices. Select Analyze holdings to fetch quotes." if sample else "Latest successful analysis. Select Analyze holdings again to refresh quotes.")
         a,b,c=st.columns(3)
-        a.metric("Supplied portfolio value", f"${result['total_value']:,.2f}", border=True)
+        a.metric("Portfolio value", f"${result['total_value']:,.2f}", border=True)
         b.metric("Largest position",f"{result['largest_position']['allocation_pct']}%", border=True)
         c.metric("Weighted expense ratio", "Unknown" if result['weighted_expense_ratio_pct'] is None else f"{result['weighted_expense_ratio_pct']}%", border=True)
         st.plotly_chart(px.pie(pd.DataFrame(result["positions"]), names="symbol", values="value", title="Holding allocation", hole=0.48), width="stretch")
         allocation=pd.DataFrame(list(result["asset_allocation_pct"].items()),columns=["Asset type","Allocation (%)"])
         st.plotly_chart(px.bar(allocation,x="Asset type",y="Allocation (%)",title="Allocation by asset type"),width="stretch")
         st.dataframe(pd.DataFrame(result["positions"]),hide_index=True)
+        quotes = st.session_state.get("portfolio_quotes", [])
+        if quotes:
+            if any(quote["Source"] == "Cached Yahoo Finance quote" for quote in quotes):
+                st.warning("Some quotes came from the cache after a market data request failed. Check their timestamps.")
+            st.caption("Prices may be delayed. When the market is closed, the last available price is used.")
+            st.dataframe(pd.DataFrame(quotes), hide_index=True)
         st.caption(f"Concentration score: {result['concentration_score']}/100 (sum of squared holding weights; higher means more concentrated). Effective holdings: {result['effective_holdings']}. These metrics do not inspect underlying ETF holdings or measure overall investment risk.")
 def select_watchlist_symbol():
     rows = st.session_state.market_watchlist.selection.rows

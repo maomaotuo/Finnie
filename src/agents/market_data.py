@@ -177,7 +177,7 @@ def _fetch_with_retry(symbol, period):
         raise MarketUnavailable(result["error"])
     return result
 
-def get_market_chart(symbol: str, period: str = "1M") -> dict:
+def get_market_chart(symbol: str, period: str = "1M", *, refresh: bool = False) -> dict:
     import re
     symbol = symbol.strip().upper()
     period = period.upper()
@@ -193,7 +193,7 @@ def get_market_chart(symbol: str, period: str = "1M") -> dict:
         cached = _cache.get(key)
         if cached:
             _cache.move_to_end(key)
-        if cached and now - cached[0] < ttl:
+        if cached and not refresh and now - cached[0] < ttl:
             # Give callers a copy so edits to chart data cannot alter the shared cache.
             return {**deepcopy(cached[1]), "cached": True, "stale": False}
     try:

@@ -7,13 +7,30 @@ import src.agents.market_symbol_resolver as resolver
 import src.agents.news_agent as news
 
 def test_ui_portfolio_goals_and_chat(monkeypatch):
-    monkeypatch.setattr(market_data, "get_market_chart", lambda symbol, period: {"error": "Offline test"})
+    quotes_requested = []
+
+    def quote(symbol, period, *, refresh=False):
+        if not refresh:
+            return {"error": "Offline test"}
+        quotes_requested.append(symbol)
+        return {
+            "latest_price": 100.0, "currency": "USD", "price_date": "2026-11-06",
+            "stale": symbol == "VOO",
+        }
+
+    monkeypatch.setattr(market_data, "get_market_chart", quote)
     app=AppTest.from_file('../src/web_app/app.py',default_timeout=30).run()
     assert not app.exception
     assert len(app.tabs)==4
     next(b for b in app.button if b.label=='Load illustrative sample portfolio').click().run()
     assert not app.exception
     assert any(m.value=='$8,500.00' for m in app.metric)
+    next(b for b in app.button if b.label == "Analyze holdings").click().run()
+    assert not app.exception
+    assert sorted(quotes_requested) == ["AAPL", "MSFT", "VOO"]
+    assert any(m.label == "Portfolio value" and m.value == "$2,300.00" for m in app.metric)
+    assert any("cache" in warning.value for warning in app.tabs[1].warning)
+    assert all(holding["price"] == 100.0 for holding in app.session_state.holdings)
     next(b for b in app.button if b.label=='Calculate projection').click().run()
     assert not app.exception
     assert any(m.label=='Required monthly contribution' for m in app.metric)
