@@ -56,15 +56,15 @@ If a price refresh fails during recording, Finnie names the ticker and clears th
 
 ## Clip 5 · Savings goal (4:55–6:05)
 
-**Show on screen.** In Goals, enter a $1,200 target, one year, $0 in current savings, $80 per month, a 0% assumed return, and Moderate risk appetite. Click **Calculate projection** and point to the chart and shortfall.
+**Show on screen.** In Goals, enter a $50,000 target, a 10-year timeline, $0 in current savings, $250 per month, a 4% assumed annual return, and Moderate risk appetite. Click **Calculate projection**. Point to the projected balance, shortfall, required monthly contribution, and chart.
 
 **Suggested narration**
 
-> I’ll set a goal of saving twelve hundred dollars in one year. I start with zero dollars and contribute eighty dollars per month. I’m using a zero percent assumed return so the math is easy to follow.
+> I’ll set a goal of saving fifty thousand dollars in ten years. I’m starting from zero, putting in two hundred and fifty dollars at the end of each month, and assuming a four percent annual return.
 >
-> Twelve contributions of eighty dollars add up to nine hundred and sixty dollars. That leaves a two hundred and forty dollar shortfall. Finnie calculates that I’d need one hundred dollars a month to reach the target, which is twenty dollars more per month than my current plan.
+> Over ten years, I’d put in thirty thousand dollars. With growth, Finnie projects a balance of about thirty-six thousand six hundred and seventy-four dollars. That leaves me about thirteen thousand three hundred and twenty-six dollars short. To reach my target in ten years at the same assumed return, I’d need about three hundred and forty-one dollars a month, or roughly ninety-one dollars more than I’m saving now.
 >
-> Moderate records the risk preference for this goal. The return field controls the growth assumption in the calculation. The chart shows how the balance changes month by month using those inputs.
+> On the chart, I can see my total deposits and my projected balance month by month. The gap between those lines is the growth from the four percent assumption. Moderate records my risk preference, and the four percent is an assumption for this example.
 
 ## Clip 6 · Tax Education (6:05–6:45)
 
