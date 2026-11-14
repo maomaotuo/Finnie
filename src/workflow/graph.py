@@ -10,6 +10,7 @@ from src.agents.market_agent import market_agent
 from src.agents.goal_agent import goal_agent
 from src.agents.news_agent import news_agent
 from src.agents.tax_agent import tax_agent
+from src.agents.base_agent import DISCLAIMER
 
 # Wrap specialists at the workflow boundary so failures become readable chat replies.
 def guarded(agent):
@@ -33,14 +34,16 @@ def remember(state):
     return {"history": history[-20:]}
 
 def combine_market_news(state):
-    """Combine the market comparison and the News Agent's sourced response."""
-    return {
-        "answer": (
-            f"{state['market_comparison']}\n\n"
-            "Headlines can provide context, but they cannot by themselves establish what caused the move."
-            f"\n\n{state['answer']}"
-        )
-    }
+    """Combine the market result and the News Agent's sourced response."""
+    market = state.get("market_quote") or state["market_comparison"]
+    if state.get("market_comparison"):
+        market += "\n\nHeadlines can provide context, but they cannot by themselves establish what caused the move."
+    news = state["answer"].removesuffix(DISCLAIMER).rstrip()
+    return {"answer": f"{market}\n\n{news}\n\n{DISCLAIMER}"}
+
+
+def has_market_news(state):
+    return bool(state.get("market_comparison") or state.get("market_quote"))
 
 
 def build_graph(checkpointer=None):
@@ -60,12 +63,12 @@ def build_graph(checkpointer=None):
     graph.add_node("combine_market_news", combine_market_news)
     graph.add_conditional_edges(
         "market",
-        lambda state: "news" if state.get("market_comparison") else "remember",
+        lambda state: "news" if has_market_news(state) else "remember",
         ["news", "remember"],
     )
     graph.add_conditional_edges(
         "news",
-        lambda state: "combine_market_news" if state.get("market_comparison") else "remember",
+        lambda state: "combine_market_news" if has_market_news(state) else "remember",
         ["combine_market_news", "remember"],
     )
     graph.add_edge("combine_market_news", "remember")

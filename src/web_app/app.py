@@ -431,5 +431,5 @@ with chat:
             st.session_state.reset_specialist = True
         # Save display messages before rerunning so the reply appears in the chat history.
         st.session_state.messages.extend([{"role":"user","content":question},
-            {"role":"assistant","content":result["answer"],"agent":None if result.get("is_greeting") else result["selected_agent"],"sources":result.get("sources",[]),"market_news_workflow":bool(result.get("market_comparison"))}])
+            {"role":"assistant","content":result["answer"],"agent":None if result.get("is_greeting") else result["selected_agent"],"sources":result.get("sources",[]),"market_news_workflow":bool(result.get("market_comparison") or result.get("market_quote"))}])
         st.rerun()

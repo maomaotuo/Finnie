@@ -1,5 +1,7 @@
 """Retrieve real headlines; never manufacture current news when a provider fails."""
 from datetime import datetime, timezone
+import re
+from zoneinfo import ZoneInfo
 import yfinance as yf
 from src.agents.base_agent import generate, DISCLAIMER
 from src.agents.market_entity_extractor import extract_market_entity
@@ -9,8 +11,10 @@ from src.core.conversation import conversation_context
 def news_agent(state):
     question = state.get("question", "")
     symbol = state.get("symbol")
+    market_quote = state.get("market_quote")
+    market_comparison = state.get("market_comparison")
     # A market handoff already carries the verified ticker.
-    if question.strip() and not state.get("market_comparison"):
+    if question.strip() and not (market_quote or market_comparison):
         entity = extract_market_entity(question, context=conversation_context(state))
         if entity.company or entity.symbol:
             symbol = resolve_symbol(entity.company, entity.symbol)
@@ -18,12 +22,17 @@ def news_agent(state):
                 return {"answer": "I couldn't identify that company. Try its full name or ticker."}
     if not symbol:
         return {"answer": "Which company or ticker would you like news about? For example: What is Apple doing with AI?"}
-    if state.get("market_comparison"):
+    if market_quote:
+        return summarize_company_news(
+            symbol, question, market_context=True,
+            prefer_today=bool(re.search(r"\btoday\b", question, re.IGNORECASE)),
+        )
+    if market_comparison:
         return summarize_company_news(symbol, question, market_context=True)
     return summarize_company_news(symbol, question)
 
 
-def summarize_company_news(symbol, question, *, market_context=False):
+def summarize_company_news(symbol, question, *, market_context=False, prefer_today=False):
     """Summarize headlines for a ticker that has already been resolved."""
     try:
         items=yf.Ticker(symbol).news or []
@@ -38,20 +47,38 @@ def summarize_company_news(symbol, question, *, market_context=False):
         url=url or content.get("link", "")
         if not content.get("title") or not url.startswith(("https://","http://")): continue
         provider=content.get("provider") or {}
-        articles.append({"number":len(articles)+1,"title":content["title"],"url":url,
+        articles.append({"title":content["title"],"url":url,
                          "published_at":content.get("pubDate", "Unknown"),
                          "publisher":provider.get("displayName", "Yahoo Finance"),
                          "summary":content.get("summary", "")[:2000]})
-        if len(articles) == (3 if market_context else 5):
-            break
     if not articles: return {"answer":f"No recent news was returned for {symbol}.","sources":[]}
+    heading = f"Recent headlines for {symbol}"
+    if prefer_today:
+        eastern = ZoneInfo("America/New_York")
+        today = datetime.now(eastern).date()
+        todays_articles = []
+        for article in articles:
+            try:
+                published = datetime.fromisoformat(article["published_at"])
+            except (TypeError, ValueError):
+                continue
+            if published.tzinfo and published.astimezone(eastern).date() == today:
+                todays_articles.append(article)
+        if todays_articles:
+            articles = todays_articles
+            heading = f"Today's headlines for {symbol} (U.S. Eastern time)"
+        else:
+            heading = f"No dated headlines for {symbol} today (U.S. Eastern time). Latest available headlines"
+    articles = articles[:3 if market_context else 5]
+    for number, article in enumerate(articles, 1):
+        article["number"] = number
     if market_context:
         # Keep the provider's headlines visible even when there's no evidence of causation.
         headlines = "\n".join(
             f"- [{a['number']}] {a['title']} ({a['publisher']}, {a['published_at']})"
             for a in articles
         )
-        answer = f"**Recent headlines for {symbol}**\n\n{headlines}"
+        answer = f"**{heading}**\n\n{headlines}"
     else:
         fallback = "\n".join(f"[{a['number']}] {a['title']} ({a['published_at']})" for a in articles)
         answer = generate(

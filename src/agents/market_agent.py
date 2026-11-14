@@ -12,6 +12,14 @@ _US_BENCHMARKS = (
 )
 
 
+def requests_quote_and_news(question):
+    """Recognize explicit requests for both a quote and headlines."""
+    return bool(
+        re.search(r"\b(?:price|quote|trading at|how much (?:is|does))\b", question, re.IGNORECASE)
+        and re.search(r"\b(?:news|headlines)\b", question, re.IGNORECASE)
+    )
+
+
 def _us_market_overview(question):
     with ThreadPoolExecutor(max_workers=len(_US_BENCHMARKS)) as pool:
         quotes = list(pool.map(lambda item: get_market_chart(item[0], "1D"), _US_BENCHMARKS))
@@ -64,8 +72,13 @@ def market_agent(state):
             symbol = resolve_symbol("Costco")
     if not symbol:
         return {"answer": "I couldn't identify a listed stock or ETF. Try a company name or ticker such as Costco or COST."}
+    include_news = requests_quote_and_news(question)
     data=get_market_chart(symbol,period)
-    if "error" in data: return {"answer":data["error"],"market_data":data}
+    if "error" in data:
+        if include_news:
+            return {"symbol": symbol, "period": period, "market_data": data,
+                    "market_quote": f"{symbol} quote: {data['error']}"}
+        return {"answer": data["error"], "market_data": data}
     change=f"{data['change_pct']:+.2f}%" if data['change_pct'] is not None else "unavailable"
     if re.search(r"\bwhy\b", question, re.IGNORECASE):
         benchmark = data if symbol == "SPY" else get_market_chart("SPY", period)
@@ -84,11 +97,15 @@ def market_agent(state):
             comparison += " Both fell over this window."
         return {"symbol": symbol, "period": period, "market_data": data,
                 "market_comparison": comparison}
-    return {"symbol":symbol,"period":period,"market_data":data,"answer":(
+    quote = (
         f"{symbol}: latest available price {data['latest_price']:,.2f} {data['currency']}. "
         f"Change over {period}: {change}. Price timestamp: {data['price_date']}. "
         f"Retrieved: {data['retrieved_at']}. Prices may be delayed and historical prices are adjusted. "
         + (data.get("warning", ""))
         + f"\n\n**Example:** At the displayed quote, one share of {symbol} would cost "
           f"{data['latest_price']:,.2f} {data['currency']} before any fees."
-        + "\n\n" + DISCLAIMER)}
+    )
+    result = {"symbol": symbol, "period": period, "market_data": data}
+    if include_news:
+        return {**result, "market_quote": quote}
+    return {**result, "answer": f"{quote}\n\n{DISCLAIMER}"}

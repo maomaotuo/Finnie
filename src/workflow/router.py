@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from src.core.llm import get_llm
 from src.agents.base_agent import conversation_context
 from src.agents.market_overview import is_market_overview
+from src.agents.market_agent import requests_quote_and_news
 from src.workflow.state import AgentName
 AGENTS = ("finance_qa", "portfolio", "market", "goal", "news", "tax")
 GREETING = re.compile(
@@ -32,7 +33,7 @@ def fallback_route(question, previous="finance_qa"):
 def workflow_router(state):
     # Clear per-turn outputs so a new answer does not inherit old citations or calculations.
     reset = {"sources": [], "answer": "", "error": "", "portfolio_analysis": {},
-             "goal_analysis": {}, "market_data": {}, "market_comparison": "", "is_greeting": False}
+             "goal_analysis": {}, "market_data": {}, "market_comparison": "", "market_quote": "", "is_greeting": False}
     # Standalone greetings can be answered immediately without a model or specialist.
     if GREETING.fullmatch(state["question"].strip()):
         return {
@@ -45,7 +46,7 @@ def workflow_router(state):
     override = state.get("agent_override", "auto")
     if override in AGENTS:
         return {**reset, "selected_agent": override}
-    if is_market_overview(state["question"]):
+    if is_market_overview(state["question"]) or requests_quote_and_news(state["question"]):
         return {**reset, "selected_agent": "market"}
     try:
         # Structured output limits the model to one of the registered specialist names.

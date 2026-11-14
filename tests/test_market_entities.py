@@ -138,3 +138,40 @@ def test_us_market_overview_uses_benchmarks_without_a_ticker(monkeypatch, questi
     assert bool(result["market_comparison"]) == uses_news
     assert headlines.call_count == int(uses_news)
     llm.assert_not_called()
+
+
+@pytest.mark.parametrize("quote_failed", [False, True])
+def test_quote_and_news_request_answers_both_parts(monkeypatch, quote_failed):
+    import src.agents.market_agent as market
+    import src.agents.news_agent as news
+    import src.workflow.router as router
+    from src.workflow.graph import build_graph
+
+    question = "what is NVDIA's stock price today? what news does it have today"
+    monkeypatch.setattr(router, "get_llm", Mock(side_effect=AssertionError))
+    monkeypatch.setattr(extractor, "extract_market_entity", Mock(return_value=
+        extractor.MarketEntity(company="NVDIA", period="1D")))
+    monkeypatch.setattr(resolver, "resolve_symbol", Mock(return_value="NVDA"))
+    quote = {"error": "Quote unavailable"} if quote_failed else {
+        "latest_price": 162.82, "currency": "USD", "change_pct": -2.03,
+        "price_date": "2026-11-13", "retrieved_at": "2026-11-13",
+    }
+    fetch = Mock(return_value=quote)
+    monkeypatch.setattr(market, "get_market_chart", fetch)
+    headlines = Mock(return_value={"answer": "Nvidia headlines", "sources": [{"title": "Headline"}]})
+    monkeypatch.setattr(news, "summarize_company_news", headlines)
+    graph = build_graph()
+    config = {"configurable": {"thread_id": "quote-and-news"}}
+    result = graph.invoke({"question": question}, config)
+
+    fetch.assert_called_once_with("NVDA", "1D")
+    headlines.assert_called_once_with("NVDA", question, market_context=True, prefer_today=True)
+    assert result["selected_agent"] == "market"
+    assert ("Quote unavailable" if quote_failed else "162.82 USD") in result["answer"]
+    assert "Nvidia headlines" in result["answer"]
+    assert result["sources"] == [{"title": "Headline"}]
+
+    following = graph.invoke({"question": "What is NVDA's stock price?", "agent_override": "market"}, config)
+    assert following["market_quote"] == ""
+    assert "Nvidia headlines" not in following["answer"]
+    assert headlines.call_count == 1

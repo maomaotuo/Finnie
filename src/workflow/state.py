@@ -14,6 +14,7 @@ class FinanceState(TypedDict, total=False):
     symbol: str
     period: str
     market_comparison: str
+    market_quote: str
     market_data: dict[str, Any]
     goal: dict[str, Any]
     goal_analysis: dict[str, Any]
