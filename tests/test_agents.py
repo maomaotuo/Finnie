@@ -97,7 +97,7 @@ def test_market_handoff_shows_provider_headlines_without_requiring_causal_eviden
         }},
     ]))
     monkeypatch.setattr(news.yf, "Ticker", ticker)
-    generate = Mock()
+    generate = Mock(return_value="The chip announcement [1] offers context. The reason for the move remains unclear.")
     monkeypatch.setattr(news, "generate", generate)
     result = news.news_agent({
         "symbol": "NVDA",
@@ -105,11 +105,14 @@ def test_market_handoff_shows_provider_headlines_without_requiring_causal_eviden
         "market_comparison": "NVDA fell 2% and SPY fell 0.4%.",
     })
     assert "Recent headlines for NVDA" in result["answer"]
+    assert "The reason for the move remains unclear." in result["answer"]
+    assert "What the reporting says" in result["answer"]
     assert "[1] Nvidia announces a new chip" in result["answer"]
     assert "Example News, 2026-11-13" in result["answer"]
     assert result["sources"][0]["url"] == "https://example.org/nvidia"
     ticker.assert_called_once_with("NVDA")
-    generate.assert_not_called()
+    generate.assert_called_once()
+    assert "NVDA fell 2% and SPY fell 0.4%" in generate.call_args.args[0]
 
 
 def test_goal_agent_uses_chat_assumptions_without_saved_goal(monkeypatch):

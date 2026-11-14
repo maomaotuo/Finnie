@@ -99,7 +99,9 @@ def test_misspelled_nvidia_why_question_uses_correct_quote_and_news(monkeypatch)
     assert "SPY" in result["answer"] and "Company headlines" in result["answer"]
     assert "cannot by themselves establish what caused the move" in result["answer"]
     assert result["sources"]
-    news.assert_called_once_with("NVDA", question, market_context=True)
+    news.assert_called_once_with(
+        "NVDA", question, market_context=True, market_comparison=result["market_comparison"],
+    )
     assert "NVDA changed -1.00%" in result["answer"]
     assert "changed +0.50%" in result["answer"]
 
