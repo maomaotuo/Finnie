@@ -13,6 +13,12 @@ GREETING = re.compile(
     r"(?:[, ]+finnie| there)?[.!?👋\s]*",
     re.IGNORECASE,
 )
+MOVE_EXPLANATION = re.compile(
+    r"\b(?:why\b|what\s+(?:drove|caused|explains)\b|"
+    r"what(?:'s|’s|\s+is|\s+was)\s+behind\b|"
+    r"explain\s+(?:the\s+)?(?:reason|drivers?|factors?)\b)",
+    re.IGNORECASE,
+)
 
 
 class RoutingDecision(BaseModel):
@@ -23,7 +29,7 @@ class RoutingDecision(BaseModel):
 
 
 def fallback_market_news(question):
-    if re.search(r"\bwhy\b", question, re.IGNORECASE):
+    if MOVE_EXPLANATION.search(question):
         return "explain_move"
     if re.search(r"\b(news|headlines)\b", question, re.IGNORECASE):
         return "headlines"
@@ -88,4 +94,8 @@ def workflow_router(state):
             state["question"], state.get("selected_agent", "finance_qa"),
         )
         market_news = fallback_market_news(state["question"])
+    # Recover an explicit request for a price-move explanation if the model
+    # chose Market but omitted the News handoff. Other intents stay model-driven.
+    if agent == "market" and market_news == "none" and MOVE_EXPLANATION.search(state["question"]):
+        market_news = "explain_move"
     return {**reset, "selected_agent": agent, "market_news": market_news if agent == "market" else "none"}

@@ -183,3 +183,42 @@ def test_quote_and_news_request_answers_both_parts(monkeypatch, quote_failed):
     assert following["market_quote"] == ""
     assert "Nvidia headlines" not in following["answer"]
     assert headlines.call_count == 1
+
+
+@pytest.mark.parametrize("router_unavailable", [False, True])
+def test_demo_costco_question_recovers_missing_news_handoff(monkeypatch, router_unavailable):
+    import src.agents.market_agent as market
+    import src.agents.news_agent as news
+    import src.workflow.router as router
+    from src.workflow.graph import build_graph
+
+    question = "Explain what drove Costco’s stock to move differently from the broader U.S. market today"
+    model = Mock()
+    classify = model.with_structured_output.return_value.invoke
+    classify.return_value = {"agent": "market"}
+    if router_unavailable:
+        classify.side_effect = RuntimeError("Router unavailable")
+    monkeypatch.setattr(router, "get_llm", lambda: model)
+    monkeypatch.setattr(extractor, "extract_market_entity", Mock(return_value=
+        extractor.MarketEntity(company="Costco", period="1D")))
+    quotes = Mock(side_effect=lambda symbol, period: {
+        "change_pct": {"COST": 1.30, "SPY": -0.38}[symbol], "price_date": "2026-11-13",
+    })
+    monkeypatch.setattr(market, "get_market_chart", quotes)
+    summarize = Mock(return_value={
+        "answer": "**What the reporting says**\n\nThe reason remains unclear.",
+        "sources": [{"title": "Costco coverage"}],
+    })
+    monkeypatch.setattr(news, "summarize_company_news", summarize)
+
+    result = build_graph().invoke(
+        {"question": question}, {"configurable": {"thread_id": "costco-demo"}},
+    )
+    assert result["market_news"] == "explain_move"
+    assert "COST changed +1.30%" in result["answer"]
+    assert "SPY" in result["answer"]
+    assert "What the reporting says" in result["answer"]
+    assert result["sources"] == [{"title": "Costco coverage"}]
+    summarize.assert_called_once_with(
+        "COST", question, market_context=True, market_comparison=result["market_comparison"],
+    )
