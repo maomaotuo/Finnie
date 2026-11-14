@@ -70,6 +70,7 @@ def test_voice_question_is_reviewed_before_chat_submission(monkeypatch):
 def test_ui_portfolio_goals_and_chat(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "")
     quotes_requested = []
+    stale_symbols = set()
 
     def quote(symbol, period, *, refresh=False):
         if not refresh:
@@ -77,7 +78,7 @@ def test_ui_portfolio_goals_and_chat(monkeypatch):
         quotes_requested.append(symbol)
         return {
             "latest_price": 100.0, "currency": "USD", "price_date": "2026-11-06",
-            "stale": symbol == "VOO",
+            "stale": symbol in stale_symbols,
         }
 
     monkeypatch.setattr(market_data, "get_market_chart", quote)
@@ -86,17 +87,26 @@ def test_ui_portfolio_goals_and_chat(monkeypatch):
     assert len(app.tabs)==4
     next(b for b in app.button if b.label=='Load illustrative sample portfolio').click().run()
     assert not app.exception
-    assert any(m.value=='$8,500.00' for m in app.metric)
+    assert not app.tabs[1].metric
     next(b for b in app.button if b.label == "Analyze holdings").click().run()
     assert not app.exception
     assert sorted(quotes_requested) == ["AAPL", "MSFT", "VOO"]
     assert any(m.label == "Portfolio value" and m.value == "$2,300.00" for m in app.metric)
-    assert any("cache" in warning.value for warning in app.tabs[1].warning)
     assert all(holding["price"] == 100.0 for holding in app.session_state.holdings)
     price_table = app.tabs[1].dataframe[1].value.set_index("Ticker")
     assert price_table.loc["AAPL", "Unit price (USD)"] == 100.0
     assert price_table.loc["AAPL", "Holding value (USD)"] == 1000.0
-    assert price_table.loc["VOO", "Source"] == "Cached Yahoo Finance quote"
+    assert price_table.loc["VOO", "Source"] == "Yahoo Finance"
+    stale_symbols.add("VOO")
+    next(b for b in app.button if b.label == "Analyze holdings").click().run()
+    assert not app.exception
+    assert any("Couldn't refresh the market price for VOO" in error.value for error in app.tabs[1].error)
+    assert not app.tabs[1].metric
+    assert not app.session_state.holdings
+    stale_symbols.clear()
+    next(b for b in app.button if b.label == "Analyze holdings").click().run()
+    assert not app.tabs[1].error
+    assert any(m.value == "$2,300.00" for m in app.tabs[1].metric)
     next(b for b in app.button if b.label=='Calculate projection').click().run()
     assert not app.exception
     assert any(m.label=='Required monthly contribution' for m in app.metric)

@@ -52,6 +52,8 @@ def price_portfolio(holdings):
         symbol = holding["symbol"]
         if "error" in quote:
             raise ValueError(f"Couldn't fetch a price for {symbol}. Check the ticker and try again.")
+        if quote.get("cached") or quote.get("stale"):
+            raise ValueError(f"Couldn't refresh the market price for {symbol}. Try again shortly.")
         if quote["currency"] != "USD":
             raise ValueError(f"{symbol} is quoted in {quote['currency']}. This portfolio is valued in USD.")
         holding["price"] = quote["latest_price"]
@@ -61,7 +63,7 @@ def price_portfolio(holdings):
             "Ticker": symbol,
             "Price (USD)": quote["latest_price"],
             "Price timestamp": quote["price_date"],
-            "Source": "Cached Yahoo Finance quote" if quote.get("stale") else "Yahoo Finance",
+            "Source": "Yahoo Finance",
         }
         for symbol, quote in quotes.items()
     ]
@@ -196,10 +198,12 @@ with portfolio:
     st.subheader("Explore your holdings")
     st.caption("Enter tickers and quantities, then select Analyze holdings to see prices in the results below. Enter cash as a USD amount in Quantity.")
     if st.button("Load illustrative sample portfolio"):
-        st.session_state.holdings=json.loads((ROOT/"src/data/sample_portfolios/sample_portfolio.json").read_text())["holdings"]
-        st.session_state.portfolio_inputs = st.session_state.holdings
+        st.session_state.portfolio_inputs = json.loads(
+            (ROOT / "src/data/sample_portfolios/sample_portfolio.json").read_text()
+        )["holdings"]
+        st.session_state.holdings = []
         st.session_state.portfolio_quotes = []
-        st.session_state.portfolio_sample = True
+        st.session_state.pop("portfolio_error", None)
         st.session_state.pop("holdings_editor", None)
     inputs = st.session_state.setdefault("portfolio_inputs", st.session_state.holdings)
     frame=pd.DataFrame(inputs, columns=["symbol","quantity","price","asset_type","expense_ratio_pct"])
@@ -220,12 +224,16 @@ with portfolio:
             st.session_state.holdings = holdings
             st.session_state.portfolio_quotes = quotes
             st.session_state.portfolio_sample = False
+            st.session_state.pop("portfolio_error", None)
         except ValueError as exc:
-            st.error(str(exc))
-    if st.session_state.holdings:
+            st.session_state.holdings = []
+            st.session_state.portfolio_quotes = []
+            st.session_state.portfolio_error = str(exc)
+    if error := st.session_state.get("portfolio_error"):
+        st.error(error)
+    if st.session_state.holdings and not st.session_state.get("portfolio_sample", False):
         result=analyze_portfolio(st.session_state.holdings)
-        sample = st.session_state.get("portfolio_sample", False)
-        st.caption("Illustrative sample prices. Select Analyze holdings to fetch quotes." if sample else "Latest successful analysis. Select Analyze holdings again to refresh quotes.")
+        st.caption("Latest successful analysis. Select Analyze holdings again to refresh quotes.")
         a,b,c=st.columns(3)
         a.metric("Portfolio value", f"${result['total_value']:,.2f}", border=True)
         b.metric("Largest position",f"{result['largest_position']['allocation_pct']}%", border=True)
@@ -244,8 +252,7 @@ with portfolio:
                 "Unit price (USD)": price,
                 "Holding value (USD)": quantity * price,
                 "Price timestamp": quote.get("Price timestamp", "—"),
-                "Source": quote.get("Source", "Illustrative" if sample else
-                                    "Cash" if holding["asset_type"] == "cash" else "Manual"),
+                "Source": quote.get("Source", "Cash" if holding["asset_type"] == "cash" else "Manual"),
             })
         st.markdown("#### Prices used in this analysis")
         st.dataframe(
@@ -256,8 +263,6 @@ with portfolio:
             },
         )
         if quotes:
-            if any(quote["Source"] == "Cached Yahoo Finance quote" for quote in quotes):
-                st.warning("Some quotes came from the cache after a market data request failed. Check their timestamps.")
             st.caption("Prices may be delayed. When the market is closed, the last available price is used.")
         st.plotly_chart(px.pie(pd.DataFrame(result["positions"]), names="symbol", values="value", title="Holding allocation", hole=0.48), width="stretch")
         allocation=pd.DataFrame(list(result["asset_allocation_pct"].items()),columns=["Asset type","Allocation (%)"])
