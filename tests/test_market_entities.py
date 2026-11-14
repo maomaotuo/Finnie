@@ -104,3 +104,39 @@ def test_misspelled_nvidia_why_question_uses_correct_quote_and_news(monkeypatch)
     assert question in news_question
     assert "NVDA changed -1.00%" in news_question
     assert "changed +0.50%" in news_question
+
+
+@pytest.mark.parametrize("question, uses_news", [
+    ("How is the U.S. stock market doing today?", False),
+    ("Are U.S. stocks up or down today?", False),
+    ("Why is the U.S. stock market down today?", True),
+])
+def test_us_market_overview_uses_benchmarks_without_a_ticker(monkeypatch, question, uses_news):
+    import src.agents.market_agent as market
+    import src.agents.news_agent as news
+    import src.workflow.router as router
+    from src.workflow.graph import build_graph
+
+    llm = Mock(side_effect=AssertionError("Overview routing should be deterministic"))
+    monkeypatch.setattr(router, "get_llm", llm)
+    fetch = Mock(side_effect=lambda symbol, period: {
+        "VTI": {"change_pct": -0.41, "price_date": "2026-11-10T15:55:00-05:00", "stale": True},
+        "SPY": {"error": "Unavailable"},
+    }[symbol])
+    monkeypatch.setattr(market, "get_market_chart", fetch)
+    headlines = Mock(return_value={"answer": "Recent benchmark headlines", "sources": []})
+    monkeypatch.setattr(news, "summarize_company_news", headlines)
+
+    result = build_graph().invoke(
+        {"question": question, "symbol": "COST", "period": "1M"},
+        {"configurable": {"thread_id": "market-overview"}},
+    )
+    assert result["selected_agent"] == "market"
+    assert sorted(call.args for call in fetch.call_args_list) == [("SPY", "1D"), ("VTI", "1D")]
+    assert "-0.41%" in result["answer"]
+    assert "cached fallback" in result["answer"]
+    assert "(SPY)** — session change unavailable" in result["answer"]
+    assert "2026-11-10" in result["answer"]
+    assert bool(result["market_comparison"]) == uses_news
+    assert headlines.call_count == int(uses_news)
+    llm.assert_not_called()

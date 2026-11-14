@@ -4,6 +4,7 @@ import logging
 from pydantic import BaseModel, Field
 from src.core.llm import get_llm
 from src.agents.base_agent import conversation_context
+from src.agents.market_overview import is_market_overview
 from src.workflow.state import AgentName
 AGENTS = ("finance_qa", "portfolio", "market", "goal", "news", "tax")
 GREETING = re.compile(
@@ -44,12 +45,14 @@ def workflow_router(state):
     override = state.get("agent_override", "auto")
     if override in AGENTS:
         return {**reset, "selected_agent": override}
+    if is_market_overview(state["question"]):
+        return {**reset, "selected_agent": "market"}
     try:
         # Structured output limits the model to one of the registered specialist names.
         decision = get_llm().with_structured_output(RoutingDecision, method="json_schema").invoke(
             "Route this financial education conversation to exactly one specialist: "
             "finance_qa (definitions, ETFs, retirement account basics), portfolio (holdings and allocation), "
-            "market (prices and trends), goal (savings projections), news (headlines and recent company developments, such as what a company is doing with AI), "
+            "market (prices, trends, and broad stock market performance), goal (savings projections), news (headlines and recent company developments, such as what a company is doing with AI), "
             "tax (tax-specific rules). Use prior conversation to resolve brief follow-ups. A new standalone definition question goes to finance_qa even after news.\n"
             f"History: {conversation_context(state)}\nQuestion: {state['question']}"
         )

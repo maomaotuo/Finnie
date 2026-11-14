@@ -1,13 +1,51 @@
 """Market node reuses the validated, cached chart data service."""
 import re
+from concurrent.futures import ThreadPoolExecutor
 
 from src.agents.market_data import get_market_chart
 from src.agents.base_agent import DISCLAIMER
+from src.agents.market_overview import is_market_overview
+
+_US_BENCHMARKS = (
+    ("VTI", "Broad U.S. stock market"),
+    ("SPY", "S&P 500 large-cap stocks"),
+)
+
+
+def _us_market_overview(question):
+    with ThreadPoolExecutor(max_workers=len(_US_BENCHMARKS)) as pool:
+        quotes = list(pool.map(lambda item: get_market_chart(item[0], "1D"), _US_BENCHMARKS))
+
+    rows = []
+    available = False
+    for (symbol, label), quote in zip(_US_BENCHMARKS, quotes):
+        change = quote.get("change_pct")
+        if change is None:
+            rows.append(f"- **{label} ({symbol})** — session change unavailable.")
+            continue
+        available = True
+        cached = " · cached fallback" if quote.get("stale") else ""
+        rows.append(f"- **{label} ({symbol})** — {change:+.2f}% as of `{quote['price_date']}`{cached}")
+
+    if not available:
+        return {"answer": "U.S. market session changes are temporarily unavailable. Please try again shortly."}
+
+    overview = (
+        "**U.S. stocks · Latest available trading session**\n\n"
+        + "\n".join(rows)
+        + "\n\nYahoo Finance via yfinance. ETF moves are measured from the prior close. "
+          "Quotes may be delayed. When markets are closed, dates reflect the latest available session."
+    )
+    if re.match(r"why\b", question.strip(), re.IGNORECASE):
+        return {"symbol": "SPY", "period": "1D", "market_comparison": overview}
+    return {"answer": f"{overview}\n\n{DISCLAIMER}"}
 
 def market_agent(state):
     symbol=state.get("symbol", "")
     period=state.get("period", "1M")
     question = state.get("question", "")
+    if is_market_overview(question):
+        return _us_market_overview(question)
     # An asset named in this turn takes priority over the ticker saved in the dashboard.
     if question.strip():
         from src.agents.market_entity_extractor import extract_market_entity

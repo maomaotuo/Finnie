@@ -36,7 +36,7 @@ def combine_market_news(state):
     """Combine the market comparison and the News Agent's sourced response."""
     return {
         "answer": (
-            f"{state['market_comparison']} "
+            f"{state['market_comparison']}\n\n"
             "Headlines can provide context, but they cannot by themselves establish what caused the move."
             f"\n\n{state['answer']}"
         )
