@@ -1,19 +1,19 @@
 import json
-from io import BytesIO
+from base64 import b64encode
+from types import SimpleNamespace
 
 import requests
-import streamlit as st
 from streamlit.testing.v1 import AppTest
 
 import src.agents.market_data as market_data
 import src.agents.market_symbol_resolver as resolver
 import src.agents.news_agent as news
+import src.web_app.chat_composer as voice
 
 
 def test_voice_question_is_reviewed_before_chat_submission(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     monkeypatch.setenv("OPENAI_TRANSCRIPTION_MODEL", "whisper-1")
-    monkeypatch.setattr(st, "audio_input", lambda *args, **kwargs: BytesIO(b"test WAV"))
     monkeypatch.setattr(market_data, "get_market_chart", lambda *args: {"error": "Offline test"})
     requests_made = []
 
@@ -25,29 +25,50 @@ def test_voice_question_is_reviewed_before_chat_submission(monkeypatch):
         return response
 
     monkeypatch.setattr(requests, "post", mock_post)
+    event = {"recording": None, "question": None}
+    rendered = []
+
+    def mock_composer(**kwargs):
+        import streamlit as st
+
+        if event["recording"] is not None:
+            st.session_state[kwargs["key"]] = SimpleNamespace(recording=event["recording"])
+            kwargs["on_recording_change"]()
+            event["recording"] = None
+        rendered.append(kwargs["data"]["result"])
+        question, event["question"] = event["question"], None
+        return SimpleNamespace(question=question)
+
+    monkeypatch.setattr(voice, "composer", mock_composer)
     app = AppTest.from_file("../src/web_app/app.py", default_timeout=30).run()
     assert not app.exception
     assert not requests_made
 
-    next(button for button in app.button if button.label == "Transcribe").click().run()
+    event["recording"] = {
+        "audio": b64encode(b"test WebM").decode(),
+        "mime": "audio/webm;codecs=opus",
+    }
+    app.run()
     assert not app.exception
     assert not app.chat_message
+    assert app.session_state.chat_transcription["text"] == "Good morning"
     assert len(requests_made) == 1
     assert requests_made[0]["data"]["model"] == "whisper-1"
-    assert requests_made[0]["files"]["file"] == ("question.wav", b"test WAV", "audio/wav")
+    assert requests_made[0]["files"]["file"] == ("question.webm", b"test WebM", "audio/webm")
 
-    draft = app.text_area(key="voice_transcript")
-    assert draft.value == "Good morning"
-    draft.set_value("Hi")
-    next(button for button in app.button if button.label == "Send voice question").click().run()
+    app.run()
+    assert rendered[-1]["text"] == "Good morning"
+    event["question"] = "Hi"
+    app.run()
     assert not app.exception
     assert app.session_state.messages[0]["content"] == "Hi"
     assert len(app.chat_message) == 2
     assert len(requests_made) == 1
-    assert not app.text_area
+    assert rendered[-1] is None
 
 
 def test_ui_portfolio_goals_and_chat(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "")
     quotes_requested = []
 
     def quote(symbol, period, *, refresh=False):
