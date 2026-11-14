@@ -1,6 +1,12 @@
-# Verification — November 6, 2026
+# Finnie verification
 
-## Automated checks
+## Submission check
+
+The full suite passed with **81 tests** and **91% coverage** across the runtime modules measured by the [README coverage command](../README.md#tests). The measured scope includes agents, orchestration, core services, calculators, and RAG retrieval and generation. Streamlit UI tests run in the suite alongside the backend tests.
+
+The suite covers portfolio quote refresh, broad U.S. market updates, quote and news requests in one turn, sourced explanations of market moves, and voice transcript review before submission. External providers are mocked in these tests. Rehearse the [demo prompts](demo_script.md) to confirm the deployed app can reach the providers when you record.
+
+## Earlier automated checks (November 6, 2026)
 
 52 tests passed. Runtime backend coverage: 89.72%. Coverage includes agents, workflow, core configuration/model helpers, calculations, and the retriever; it excludes the UI, index-building and source-curation scripts. Streamlit UI flows are exercised separately by AppTest in the same suite. The 80% coverage gate passed. Python compilation passed.
 

@@ -2,6 +2,8 @@
 
 Applied Agentic AI capstone: financial education through six specialized agents, LangGraph orchestration, local retrieval, deterministic calculators, and a Streamlit interface. Local deployment is supported; no cloud deployment is required.
 
+See the [submission checklist](docs/submission.md) for the prototype, code, documentation, and demo materials.
+
 ## Run locally
 
 Python 3.11–3.13 recommended. From this project directory:
