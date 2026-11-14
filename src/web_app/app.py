@@ -194,7 +194,7 @@ with st.sidebar:
 chat, portfolio, market, goals = st.tabs(["💬 Chat", "🥧 Portfolio", "📊 Market", "🎯 Goals"])
 with portfolio:
     st.subheader("Explore your holdings")
-    st.caption("Enter tickers and quantities. Analyze holdings fetches prices for stocks, ETFs, and mutual funds. Enter cash as a USD amount in Quantity.")
+    st.caption("Enter tickers and quantities, then select Analyze holdings to see prices in the results below. Enter cash as a USD amount in Quantity.")
     if st.button("Load illustrative sample portfolio"):
         st.session_state.holdings=json.loads((ROOT/"src/data/sample_portfolios/sample_portfolio.json").read_text())["holdings"]
         st.session_state.portfolio_inputs = st.session_state.holdings
@@ -230,16 +230,39 @@ with portfolio:
         a.metric("Portfolio value", f"${result['total_value']:,.2f}", border=True)
         b.metric("Largest position",f"{result['largest_position']['allocation_pct']}%", border=True)
         c.metric("Weighted expense ratio", "Unknown" if result['weighted_expense_ratio_pct'] is None else f"{result['weighted_expense_ratio_pct']}%", border=True)
-        st.plotly_chart(px.pie(pd.DataFrame(result["positions"]), names="symbol", values="value", title="Holding allocation", hole=0.48), width="stretch")
-        allocation=pd.DataFrame(list(result["asset_allocation_pct"].items()),columns=["Asset type","Allocation (%)"])
-        st.plotly_chart(px.bar(allocation,x="Asset type",y="Allocation (%)",title="Allocation by asset type"),width="stretch")
-        st.dataframe(pd.DataFrame(result["positions"]),hide_index=True)
         quotes = st.session_state.get("portfolio_quotes", [])
+        quotes_by_ticker = {quote["Ticker"]: quote for quote in quotes}
+        priced_holdings = []
+        for holding in st.session_state.holdings:
+            ticker = holding["symbol"].strip().upper()
+            quantity = float(holding["quantity"])
+            price = float(holding["price"])
+            quote = quotes_by_ticker.get(ticker, {})
+            priced_holdings.append({
+                "Ticker": ticker,
+                "Quantity": quantity,
+                "Unit price (USD)": price,
+                "Holding value (USD)": quantity * price,
+                "Price timestamp": quote.get("Price timestamp", "—"),
+                "Source": quote.get("Source", "Illustrative" if sample else
+                                    "Cash" if holding["asset_type"] == "cash" else "Manual"),
+            })
+        st.markdown("#### Prices used in this analysis")
+        st.dataframe(
+            pd.DataFrame(priced_holdings), hide_index=True,
+            column_config={
+                "Unit price (USD)": st.column_config.NumberColumn(format="$%.2f"),
+                "Holding value (USD)": st.column_config.NumberColumn(format="$%.2f"),
+            },
+        )
         if quotes:
             if any(quote["Source"] == "Cached Yahoo Finance quote" for quote in quotes):
                 st.warning("Some quotes came from the cache after a market data request failed. Check their timestamps.")
             st.caption("Prices may be delayed. When the market is closed, the last available price is used.")
-            st.dataframe(pd.DataFrame(quotes), hide_index=True)
+        st.plotly_chart(px.pie(pd.DataFrame(result["positions"]), names="symbol", values="value", title="Holding allocation", hole=0.48), width="stretch")
+        allocation=pd.DataFrame(list(result["asset_allocation_pct"].items()),columns=["Asset type","Allocation (%)"])
+        st.plotly_chart(px.bar(allocation,x="Asset type",y="Allocation (%)",title="Allocation by asset type"),width="stretch")
+        st.dataframe(pd.DataFrame(result["positions"]),hide_index=True)
         st.caption(f"Concentration score: {result['concentration_score']}/100 (sum of squared holding weights; higher means more concentrated). Effective holdings: {result['effective_holdings']}. These metrics do not inspect underlying ETF holdings or measure overall investment risk.")
 def select_watchlist_symbol():
     rows = st.session_state.market_watchlist.selection.rows

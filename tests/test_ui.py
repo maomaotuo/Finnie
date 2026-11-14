@@ -93,6 +93,10 @@ def test_ui_portfolio_goals_and_chat(monkeypatch):
     assert any(m.label == "Portfolio value" and m.value == "$2,300.00" for m in app.metric)
     assert any("cache" in warning.value for warning in app.tabs[1].warning)
     assert all(holding["price"] == 100.0 for holding in app.session_state.holdings)
+    price_table = app.tabs[1].dataframe[1].value.set_index("Ticker")
+    assert price_table.loc["AAPL", "Unit price (USD)"] == 100.0
+    assert price_table.loc["AAPL", "Holding value (USD)"] == 1000.0
+    assert price_table.loc["VOO", "Source"] == "Cached Yahoo Finance quote"
     next(b for b in app.button if b.label=='Calculate projection').click().run()
     assert not app.exception
     assert any(m.label=='Required monthly contribution' for m in app.metric)
