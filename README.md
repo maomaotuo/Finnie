@@ -77,7 +77,7 @@ flowchart LR
     Portfolio --> Calc[Validated Python calculations]
     Goal --> Calc
     Market --> Yahoo[Cached Yahoo Finance data]
-    Market -->|Why did a stock move?| News
+    Market -->|Supervisor requests news context| News
     News --> Combine[Combine comparison and headlines]
     News --> Headlines[Yahoo Finance headlines]
     RAG --> LLM[Gemini grounded generation]
@@ -85,7 +85,7 @@ flowchart LR
     Router --- Memory[Per-session in-memory checkpoint]
 ```
 
-The supervisor selects the first specialist for each turn. For a market “why” question, Market passes its resolved ticker and comparison to News. A separate graph step combines both results, and Chat shows both specialists. Agents also share holdings, goal inputs, ticker, and bounded conversation history across turns. Each browser session owns its compiled graph and random thread ID. History keeps the last ten exchanges; restart or clear conversation to discard memory. There is no account authentication or disk persistence.
+The supervisor selects the first specialist and decides whether a market request also needs headlines or an explanation of a price move. When News is needed, Market passes its resolved ticker and market result to News. A separate graph step combines both results, and Chat shows both specialists. Agents also share holdings, goal inputs, ticker, and bounded conversation history across turns. Each browser session owns its compiled graph and random thread ID. History keeps the last ten exchanges; restart or clear conversation to discard memory. There is no account authentication or disk persistence.
 
 See [technical design](docs/technical_design.md) for interfaces and tradeoffs, [requirements mapping](docs/capstone_checklist.md) for submission scope, and [demo script](docs/demo_script.md) for a suggested recording.
 
@@ -146,10 +146,11 @@ Finnie provides educational information, not personalized investment, legal, or 
 
 ## Deploy to Streamlit Community Cloud
 
-Push the project to a private GitHub repository and connect it to Streamlit Community Cloud. Create an app from that repository, select the `main` branch, and use `src/web_app/app.py` as the entry point. In **Advanced settings**, select Python 3.13 and enter your Gemini credential in the app's Secrets field:
+Push the project to a private GitHub repository and connect it to Streamlit Community Cloud. Create an app from that repository, select the `main` branch, and use `src/web_app/app.py` as the entry point. In **Advanced settings**, select Python 3.13 and enter the Gemini key and, to enable voice questions, the OpenAI key for Whisper in the app's Secrets field.
 
 ```toml
-GOOGLE_API_KEY = "your-key"
+GOOGLE_API_KEY = "your_gemini_api_key"
+OPENAI_API_KEY = "your_openai_api_key"
 ```
 
 Keep local credentials in `.env` or `.streamlit/secrets.toml`. The repository includes the FAISS index, and the first retrieval can download embedding weights. After deployment, test a Chat question, a market lookup, and a savings projection using the hosted URL. [Streamlit deployment guide](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)

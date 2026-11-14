@@ -13,6 +13,7 @@ class FinanceState(TypedDict, total=False):
     sources: list[dict[str, Any]]
     symbol: str
     period: str
+    market_news: Literal["none", "headlines", "explain_move"]
     market_comparison: str
     market_quote: str
     market_data: dict[str, Any]

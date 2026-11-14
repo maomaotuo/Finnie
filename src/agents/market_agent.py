@@ -12,15 +12,7 @@ _US_BENCHMARKS = (
 )
 
 
-def requests_quote_and_news(question):
-    """Recognize explicit requests for both a quote and headlines."""
-    return bool(
-        re.search(r"\b(?:price|quote|trading at|how much (?:is|does))\b", question, re.IGNORECASE)
-        and re.search(r"\b(?:news|headlines)\b", question, re.IGNORECASE)
-    )
-
-
-def _us_market_overview(question):
+def _us_market_overview(news_intent):
     with ThreadPoolExecutor(max_workers=len(_US_BENCHMARKS)) as pool:
         quotes = list(pool.map(lambda item: get_market_chart(item[0], "1D"), _US_BENCHMARKS))
 
@@ -44,16 +36,19 @@ def _us_market_overview(question):
         + "\n\nYahoo Finance via yfinance. ETF moves are measured from the prior close. "
           "Quotes may be delayed. When markets are closed, dates reflect the latest available session."
     )
-    if re.match(r"why\b", question.strip(), re.IGNORECASE):
+    if news_intent == "explain_move":
         return {"symbol": "SPY", "period": "1D", "market_comparison": overview}
+    if news_intent == "headlines":
+        return {"symbol": "SPY", "period": "1D", "market_quote": overview}
     return {"answer": f"{overview}\n\n{DISCLAIMER}"}
 
 def market_agent(state):
     symbol=state.get("symbol", "")
     period=state.get("period", "1M")
     question = state.get("question", "")
+    news_intent = state.get("market_news", "none")
     if is_market_overview(question):
-        return _us_market_overview(question)
+        return _us_market_overview(news_intent)
     # An asset named in this turn takes priority over the ticker saved in the dashboard.
     if question.strip():
         from src.agents.market_entity_extractor import extract_market_entity
@@ -72,7 +67,7 @@ def market_agent(state):
             symbol = resolve_symbol("Costco")
     if not symbol:
         return {"answer": "I couldn't identify a listed stock or ETF. Try a company name or ticker such as Costco or COST."}
-    include_news = requests_quote_and_news(question)
+    include_news = news_intent != "none"
     data=get_market_chart(symbol,period)
     if "error" in data:
         if include_news:
@@ -80,7 +75,7 @@ def market_agent(state):
                     "market_quote": f"{symbol} quote: {data['error']}"}
         return {"answer": data["error"], "market_data": data}
     change=f"{data['change_pct']:+.2f}%" if data['change_pct'] is not None else "unavailable"
-    if re.search(r"\bwhy\b", question, re.IGNORECASE):
+    if news_intent == "explain_move":
         benchmark = data if symbol == "SPY" else get_market_chart("SPY", period)
         comparison = f"Over {period}, {symbol} changed {change} through {data['price_date']}."
         if benchmark.get("change_pct") is not None:

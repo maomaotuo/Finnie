@@ -73,7 +73,7 @@ def test_known_company_typo_resolves_without_search_results(monkeypatch):
 def test_misspelled_nvidia_why_question_uses_correct_quote_and_news(monkeypatch):
     import src.agents.market_agent as market
 
-    question = "why sotock market all goes well except for Nevidia"
+    question = "Explain what drove Nevidia to lag the broader market today."
     monkeypatch.setattr(extractor, "extract_market_entity", Mock(return_value=
         extractor.MarketEntity(company="Nevidia", symbol="FNV", period="1D")))
     monkeypatch.setattr(resolver.yf, "Search", Mock(return_value=Mock(quotes=[
@@ -86,7 +86,13 @@ def test_misspelled_nvidia_why_question_uses_correct_quote_and_news(monkeypatch)
     news = Mock(return_value={"answer": "Company headlines", "sources": [{"url": "https://example.com"}]})
     import src.agents.news_agent as news_agent
     from src.workflow.graph import build_graph
+    import src.workflow.router as router
 
+    decision = Mock()
+    decision.with_structured_output.return_value.invoke.return_value = router.RoutingDecision(
+        agent="market", market_news="explain_move",
+    )
+    monkeypatch.setattr(router, "get_llm", lambda: decision)
     monkeypatch.setattr(news_agent, "summarize_company_news", news)
     graph = build_graph()
     config = {"configurable": {"thread_id": "market-news"}}
@@ -139,7 +145,7 @@ def test_us_market_overview_uses_benchmarks_without_a_ticker(monkeypatch, questi
     assert "2026-11-10" in result["answer"]
     assert bool(result["market_comparison"]) == uses_news
     assert headlines.call_count == int(uses_news)
-    llm.assert_not_called()
+    llm.assert_called_once()
 
 
 @pytest.mark.parametrize("quote_failed", [False, True])
