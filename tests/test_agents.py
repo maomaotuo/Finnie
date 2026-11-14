@@ -87,6 +87,31 @@ def test_news_resolves_company_from_chat_without_market_selection(monkeypatch):
     summarize.assert_called_once_with("AAPL", question)
 
 
+def test_market_handoff_shows_provider_headlines_without_requiring_causal_evidence(monkeypatch):
+    ticker = Mock(return_value=Mock(news=[
+        {"content": {
+            "title": "Nvidia announces a new chip",
+            "canonicalUrl": {"url": "https://example.org/nvidia"},
+            "pubDate": "2026-11-13T12:00:00Z",
+            "provider": {"displayName": "Example News"},
+        }},
+    ]))
+    monkeypatch.setattr(news.yf, "Ticker", ticker)
+    generate = Mock()
+    monkeypatch.setattr(news, "generate", generate)
+    result = news.news_agent({
+        "symbol": "NVDA",
+        "question": "Why did Nvidia move differently from the market?",
+        "market_comparison": "NVDA fell 2% and SPY fell 0.4%.",
+    })
+    assert "Recent headlines for NVDA" in result["answer"]
+    assert "[1] Nvidia announces a new chip" in result["answer"]
+    assert "Example News, 2026-11-13" in result["answer"]
+    assert result["sources"][0]["url"] == "https://example.org/nvidia"
+    ticker.assert_called_once_with("NVDA")
+    generate.assert_not_called()
+
+
 def test_goal_agent_uses_chat_assumptions_without_saved_goal(monkeypatch):
     import src.agents.goal_agent as goals
 

@@ -97,13 +97,11 @@ def test_misspelled_nvidia_why_question_uses_correct_quote_and_news(monkeypatch)
     result = graph.get_state(config).values
     assert result["symbol"] == "NVDA"
     assert "SPY" in result["answer"] and "Company headlines" in result["answer"]
+    assert "cannot by themselves establish what caused the move" in result["answer"]
     assert result["sources"]
-    news.assert_called_once()
-    ticker, news_question = news.call_args.args
-    assert ticker == "NVDA"
-    assert question in news_question
-    assert "NVDA changed -1.00%" in news_question
-    assert "changed +0.50%" in news_question
+    news.assert_called_once_with("NVDA", question, market_context=True)
+    assert "NVDA changed -1.00%" in result["answer"]
+    assert "changed +0.50%" in result["answer"]
 
 
 @pytest.mark.parametrize("question, uses_news", [
