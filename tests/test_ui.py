@@ -1,10 +1,51 @@
 import json
+from io import BytesIO
 
+import requests
+import streamlit as st
 from streamlit.testing.v1 import AppTest
 
 import src.agents.market_data as market_data
 import src.agents.market_symbol_resolver as resolver
 import src.agents.news_agent as news
+
+
+def test_voice_question_is_reviewed_before_chat_submission(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setenv("OPENAI_TRANSCRIPTION_MODEL", "whisper-1")
+    monkeypatch.setattr(st, "audio_input", lambda *args, **kwargs: BytesIO(b"test WAV"))
+    monkeypatch.setattr(market_data, "get_market_chart", lambda *args: {"error": "Offline test"})
+    requests_made = []
+
+    def mock_post(url, **kwargs):
+        requests_made.append(kwargs)
+        response = requests.Response()
+        response.status_code = 200
+        response._content = b'{"text":"Good morning"}'
+        return response
+
+    monkeypatch.setattr(requests, "post", mock_post)
+    app = AppTest.from_file("../src/web_app/app.py", default_timeout=30).run()
+    assert not app.exception
+    assert not requests_made
+
+    next(button for button in app.button if button.label == "Transcribe").click().run()
+    assert not app.exception
+    assert not app.chat_message
+    assert len(requests_made) == 1
+    assert requests_made[0]["data"]["model"] == "whisper-1"
+    assert requests_made[0]["files"]["file"] == ("question.wav", b"test WAV", "audio/wav")
+
+    draft = app.text_area(key="voice_transcript")
+    assert draft.value == "Good morning"
+    draft.set_value("Hi")
+    next(button for button in app.button if button.label == "Send voice question").click().run()
+    assert not app.exception
+    assert app.session_state.messages[0]["content"] == "Hi"
+    assert len(app.chat_message) == 2
+    assert len(requests_made) == 1
+    assert not app.text_area
+
 
 def test_ui_portfolio_goals_and_chat(monkeypatch):
     quotes_requested = []

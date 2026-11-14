@@ -34,6 +34,7 @@ python main.py
 ## Use the application
 
 - **Chat** opens with starter questions. Try “What is an ETF?” followed by “How does it differ from a mutual fund?” The reply names the specialist and groups citations in an expandable **Sources** panel. The sidebar lets you select a specialist for the next question, after which routing returns to **Automatic**. **Advanced search settings** includes an optional knowledge category filter for Finance Q&A and Tax.
+- **Ask by voice** in Chat lets you record a question, select **Transcribe**, edit the result, and click **Send voice question**. Set `OPENAI_API_KEY` in your local `.env` or in Streamlit Cloud's top-level app Secrets to enable it. Allow microphone access in your browser. Finnie sends the recording to OpenAI when you click **Transcribe**. The transcript goes through the same specialist routing as typed questions.
 - **Portfolio** lets you load the illustrative sample or enter holdings and select **Analyze holdings**. Finnie requests the latest available USD prices from Yahoo Finance for stocks, ETFs, and mutual funds, and shows their timestamps. Enter cash as a USD amount in Quantity and enter manual USD prices for bonds and other holdings. Finnie combines duplicate tickers and shows allocation, concentration, and expense ratios. Missing fund expense ratios remain unknown.
 - **Market** starts with a selectable watchlist. Click a row or search by company name or ticker to open its chart and automatically load recent news. Company search handles common typos when it finds a close match. Switch periods on the chart or use **Back to market overview** to return to the watchlist. Quotes show their price and retrieval timestamps and may be delayed. The selected ticker supplies context for Market and News questions in Chat.
 - **Goals** projects a savings balance using your target, timeline, current savings, monthly contribution, and assumed return. The chart marks the target. The results show the required monthly contribution and either the projected shortfall or surplus. If you contribute more than required, Finnie shows the extra amount per month. Risk appetite is recorded as context. The assumed annual return drives the growth calculation.
@@ -41,6 +42,8 @@ python main.py
 You can also enter a goal directly in Chat. Try **“My savings goal is $1,200 in one year. I have $0 saved, contribute $80 per month, and assume a 0% annual return.”** The expected result is a **$960** projected balance and a **$240** shortfall. Reaching the target would take **$100 per month**, or **$20 more** than the current contribution. Chat inputs apply to the current calculation, and any saved goal supplies assumptions you leave out.
 
 ## Tools and technologies
+
+Voice uses OpenAI's `whisper-1` by default. OpenAI lists February 26, 2027 as its shutdown date. Set `OPENAI_TRANSCRIPTION_MODEL=gpt-transcribe` to use the newer file transcription model. [OpenAI transcription guide](https://developers.openai.com/api/docs/guides/transcription)
 
 | Tool | What Finnie uses it for |
 | --- | --- |

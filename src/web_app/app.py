@@ -8,7 +8,8 @@ from uuid import uuid4
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from src.core.config import ROOT
+from src.core.config import ROOT, option
+from src.core.transcription import transcribe_question
 from src.workflow.graph import build_graph, guarded
 from src.agents.market_symbol_resolver import resolve_symbol
 from src.agents.market_data import get_market_chart
@@ -154,7 +155,13 @@ if "graph" not in st.session_state:
     st.session_state.goal={}
     st.session_state.symbol=""
 
-# The widget can be reset at the start of the rerun, before it is rendered.
+def clear_voice_draft():
+    st.session_state.pop("voice_transcript", None)
+    # A new widget key clears the previous recording on the next rerun.
+    st.session_state.voice_recording_version = st.session_state.get("voice_recording_version", 0) + 1
+
+
+# Reset the specialist before rendering its widget.
 if st.session_state.pop("reset_specialist", False):
     st.session_state.specialist = "auto"
 
@@ -187,6 +194,7 @@ with st.sidebar:
         st.session_state.graph=build_graph()
         st.session_state.thread_id=str(uuid4())
         st.session_state.messages=[]
+        clear_voice_draft()
         st.rerun()
 
 chat, portfolio, market, goals = st.tabs(["💬 Chat", "🥧 Portfolio", "📊 Market", "🎯 Goals"])
@@ -417,7 +425,27 @@ with chat:
                         distance = source.get("faiss_distance")
                         if distance is not None:
                             st.caption(f"Match distance {distance:.3f} · lower is closer")
-    question = st.chat_input("Ask Finnie a question…") or starter
+    voice_question = None
+    with st.expander("Ask by voice"):
+        if option("openai_api_key", "").strip():
+            st.caption("Record your question, then select Transcribe to send the recording to OpenAI.")
+            version = st.session_state.get("voice_recording_version", 0)
+            recording = st.audio_input("Record your question", key=f"voice_recording_{version}")
+            if st.button("Transcribe", disabled=recording is None):
+                st.session_state.pop("voice_transcript", None)
+                try:
+                    with st.spinner("Transcribing your recording…"):
+                        st.session_state.voice_transcript = transcribe_question(recording.getvalue())
+                except ValueError as exc:
+                    st.error(str(exc))
+            if "voice_transcript" in st.session_state:
+                draft = st.text_area("Review your question", key="voice_transcript")
+                if st.button("Send voice question", disabled=not draft.strip()):
+                    voice_question = draft.strip()
+                    clear_voice_draft()
+        else:
+            st.caption("Set OPENAI_API_KEY in the app configuration to enable transcription.")
+    question = st.chat_input("Ask Finnie a question…") or starter or voice_question
     if question:
         # Give the selected specialist the current dashboard inputs alongside the question.
         payload={"question":question,"agent_override":agent,"portfolio":st.session_state.holdings,
