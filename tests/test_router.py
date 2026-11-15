@@ -20,3 +20,25 @@ def test_llm_route(monkeypatch):
 
 def test_followup():
     assert router.fallback_route('What about that instead?','goal')=='goal'
+
+
+@pytest.mark.parametrize("model_unavailable", [False, True])
+def test_capital_gain_definition_and_followup_go_to_tax(monkeypatch, model_unavailable):
+    model = Mock()
+    classify = model.with_structured_output.return_value.invoke
+    classify.return_value = router.RoutingDecision(agent="finance_qa")
+    if model_unavailable:
+        classify.side_effect = RuntimeError("Model unavailable")
+    monkeypatch.setattr(router, "get_llm", lambda: model)
+
+    first = "What is a long-term capital gain?"
+    route = router.workflow_router({"question": first})
+    assert route["selected_agent"] == "tax"
+    followup = {
+        **route,
+        "question": "how does is differ from short term gain",
+        "history": [{"role": "user", "content": first}],
+    }
+    assert router.workflow_router(followup)["selected_agent"] == "tax"
+    assert router.workflow_router({**followup, "agent_override": "finance_qa"})["selected_agent"] == "finance_qa"
+    assert router.workflow_router({**followup, "question": "What is an ETF?"})["selected_agent"] == "finance_qa"

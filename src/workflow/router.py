@@ -19,6 +19,10 @@ MOVE_EXPLANATION = re.compile(
     r"explain\s+(?:the\s+)?(?:reason|drivers?|factors?)\b)",
     re.IGNORECASE,
 )
+CAPITAL_GAIN_TOPIC = re.compile(
+    r"\bcapital\s+gains?\b|\b(?:long|short)[\s\-‐‑–]+term\s+(?:capital\s+)?gains?\b",
+    re.IGNORECASE,
+)
 
 
 class RoutingDecision(BaseModel):
@@ -45,10 +49,11 @@ def fallback_route(question, previous="finance_qa"):
         ("news", r"\b(news|headlines)\b"),
         ("portfolio", r"\b(portfolio|holdings|allocation)\b"),
         ("goal", r"\b(goal|save|saving|afford|monthly contribution|retire in)\b"),
-        ("tax", r"\b(tax|taxes|capital gains|deductible)\b"),
+        ("tax", r"\b(tax|taxes|deductible)\b"),
         ("market", r"\b(price|quote|ticker|market|stock today|chart)\b"),
     ]:
-        if re.search(pattern, q): return agent
+        if re.search(pattern, q) or (agent == "tax" and CAPITAL_GAIN_TOPIC.search(q)):
+            return agent
     if re.search(r"\b(it|that|those|them|instead|also)\b", q) and previous in AGENTS:
         return previous
     return "finance_qa"
@@ -74,7 +79,10 @@ def workflow_router(state):
             "Choose the first specialist for this financial education request: "
             "finance_qa (definitions, ETFs, retirement account basics), portfolio (holdings and allocation), "
             "market (prices, trends, and broad stock market performance), goal (savings projections), news (headlines and recent company developments, such as what a company is doing with AI), "
-            "tax (tax-specific rules). Use prior conversation to resolve brief follow-ups. A new standalone definition question goes to finance_qa even after news.\n"
+            "tax (tax concepts and rules, including capital-gain definitions, holding periods, "
+            "and short-term versus long-term gains). Use prior conversation to resolve brief follow-ups. "
+            "Route general finance definitions to finance_qa, including after a news turn. "
+            "Route tax definitions and their follow-ups to tax.\n"
             "Choose market first for market performance, requests combining quotes and news, "
             "or requests for drivers behind a price move. For market, set market_news to headlines "
             "when the user also wants news, explain_move when they want the reason for a move "
@@ -98,4 +106,7 @@ def workflow_router(state):
     # chose Market but omitted the News handoff. Other intents stay model-driven.
     if agent == "market" and market_news == "none" and MOVE_EXPLANATION.search(state["question"]):
         market_news = "explain_move"
+    # Capital-gain education belongs to Tax when the generalist is selected.
+    if agent == "finance_qa" and CAPITAL_GAIN_TOPIC.search(state["question"]):
+        agent = "tax"
     return {**reset, "selected_agent": agent, "market_news": market_news if agent == "market" else "none"}
