@@ -85,7 +85,7 @@ flowchart LR
     Router --- Memory[Per-session in-memory checkpoint]
 ```
 
-The supervisor selects the first specialist and decides whether a market request also needs headlines or an explanation of a price move. When News is needed, Market passes its resolved ticker and market result to News. A separate graph step combines both results, and Chat shows both specialists. Agents also share holdings, goal inputs, ticker, and bounded conversation history across turns. Each browser session owns its compiled graph and random thread ID. History keeps the last ten exchanges; restart or clear conversation to discard memory. There is no account authentication or disk persistence.
+The supervisor selects the specialist best suited to the user’s intent and decides whether a market request also needs headlines or an explanation of a price move. When News is needed, Market passes its resolved ticker and market result to News. A separate graph step combines both results, and Chat shows both specialists. Agents also share holdings, goal inputs, ticker, and bounded conversation history across turns. Each browser session owns its compiled graph and random thread ID. History keeps the last ten exchanges; restart or clear conversation to discard memory. There is no account authentication or disk persistence.
 
 See [technical design](docs/technical_design.md) for interfaces and tradeoffs, [requirements mapping](docs/capstone_checklist.md) for submission scope, and [demo script](docs/demo_script.md) for a suggested recording.
 

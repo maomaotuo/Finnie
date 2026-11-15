@@ -26,7 +26,7 @@ CAPITAL_GAIN_TOPIC = re.compile(
 
 
 class RoutingDecision(BaseModel):
-    agent: AgentName = Field(description="Best first specialist for this turn")
+    agent: AgentName = Field(description="Specialist best suited to the user's primary intent")
     market_news: Literal["none", "headlines", "explain_move"] = Field(
         default="none", description="News work needed after a Market Analysis result",
     )
@@ -76,15 +76,17 @@ def workflow_router(state):
     try:
         # Structured output limits the model to one of the registered specialist names.
         decision = get_llm().with_structured_output(RoutingDecision, method="json_schema").invoke(
-            "Choose the first specialist for this financial education request: "
+            "Read the full request and choose the specialist best suited to the user's primary intent. "
+            "Use relevant conversation history to interpret brief follow-ups. "
+            "A specialist should handle questions in its domain even when phrased as definitions. "
             "finance_qa (definitions, ETFs, retirement account basics), portfolio (holdings and allocation), "
             "market (prices, trends, and broad stock market performance), goal (savings projections), news (headlines and recent company developments, such as what a company is doing with AI), "
             "tax (tax concepts and rules, including capital-gain definitions, holding periods, "
-            "and short-term versus long-term gains). Use prior conversation to resolve brief follow-ups. "
+            "and short-term versus long-term gains). "
             "Route general finance definitions to finance_qa, including after a news turn. "
             "Route tax definitions and their follow-ups to tax.\n"
-            "Choose market first for market performance, requests combining quotes and news, "
-            "or requests for drivers behind a price move. For market, set market_news to headlines "
+            "Choose market when the answer needs price or performance data, including when the user "
+            "also asks for headlines or an explanation of a price move. For market, set market_news to headlines "
             "when the user also wants news, explain_move when they want the reason for a move "
             "even if phrased without a question word, and none for market data alone. "
             "Choose news for standalone headline or company development requests. "
