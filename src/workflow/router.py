@@ -19,8 +19,10 @@ MOVE_EXPLANATION = re.compile(
     r"explain\s+(?:the\s+)?(?:reason|drivers?|factors?)\b)",
     re.IGNORECASE,
 )
-CAPITAL_GAIN_TOPIC = re.compile(
-    r"\bcapital\s+gains?\b|\b(?:long|short)[\s\-‐‑–]+term\s+(?:capital\s+)?gains?\b",
+TAX_TOPIC = re.compile(
+    r"\b(?:tax(?:es|ed|able|ation)?|deductible|deductions?|capital\s+(?:gains?|loss(?:es)?))\b"
+    r"|\b(?:long|short)[\s\-‐‑–]+term\s+(?:capital\s+)?gains?\b"
+    r"|\bholding[\s\-]+periods?\b",
     re.IGNORECASE,
 )
 
@@ -49,10 +51,10 @@ def fallback_route(question, previous="finance_qa"):
         ("news", r"\b(news|headlines)\b"),
         ("portfolio", r"\b(portfolio|holdings|allocation)\b"),
         ("goal", r"\b(goal|save|saving|afford|monthly contribution|retire in)\b"),
-        ("tax", r"\b(tax|taxes|deductible)\b"),
+        ("tax", TAX_TOPIC),
         ("market", r"\b(price|quote|ticker|market|stock today|chart)\b"),
     ]:
-        if re.search(pattern, q) or (agent == "tax" and CAPITAL_GAIN_TOPIC.search(q)):
+        if re.search(pattern, q):
             return agent
     if re.search(r"\b(it|that|those|them|instead|also)\b", q) and previous in AGENTS:
         return previous
@@ -78,18 +80,20 @@ def workflow_router(state):
         decision = get_llm().with_structured_output(RoutingDecision, method="json_schema").invoke(
             "Read the full request and choose the specialist best suited to the user's primary intent. "
             "Use relevant conversation history to interpret brief follow-ups. "
-            "A specialist should handle questions in its domain even when phrased as definitions. "
-            "finance_qa (definitions, ETFs, retirement account basics), portfolio (holdings and allocation), "
-            "market (prices, trends, and broad stock market performance), goal (savings projections), news (headlines and recent company developments, such as what a company is doing with AI), "
-            "tax (tax concepts and rules, including capital-gain definitions, holding periods, "
-            "and short-term versus long-term gains). "
-            "Route general finance definitions to finance_qa, including after a news turn. "
-            "Route tax definitions and their follow-ups to tax.\n"
+            "Use tax for tax concepts, treatment, and rules, including capital-gain definitions, "
+            "holding periods for tax classification, and comparisons of short-term and long-term gains. "
+            "Use finance_qa for general financial definitions, ETF basics, and how retirement accounts work. "
+            "If the request asks about taxes on an ETF or retirement account, use tax. "
+            "For example, 'What is a Roth IRA?' goes to finance_qa, and "
+            "'Are Roth IRA withdrawals taxable?' goes to tax. "
+            "Use portfolio for holdings and allocation, and goal for savings projections. "
+            "For each new standalone question, use its own intent.\n"
             "Choose market when the answer needs price or performance data, including when the user "
             "also asks for headlines or an explanation of a price move. For market, set market_news to headlines "
             "when the user also wants news, explain_move when they want the reason for a move "
             "even if phrased without a question word, and none for market data alone. "
-            "Choose news for standalone headline or company development requests. "
+            "Choose news for standalone headline or company development requests, "
+            "such as what a company is doing with AI. "
             f"Specialist override: {override}.\n"
             f"History: {conversation_context(state)}\nQuestion: {state['question']}"
         )
@@ -108,7 +112,7 @@ def workflow_router(state):
     # chose Market but omitted the News handoff. Other intents stay model-driven.
     if agent == "market" and market_news == "none" and MOVE_EXPLANATION.search(state["question"]):
         market_news = "explain_move"
-    # Capital-gain education belongs to Tax when the generalist is selected.
-    if agent == "finance_qa" and CAPITAL_GAIN_TOPIC.search(state["question"]):
+    # Resolve overlap between the two educational specialists.
+    if agent == "finance_qa" and TAX_TOPIC.search(state["question"]):
         agent = "tax"
     return {**reset, "selected_agent": agent, "market_news": market_news if agent == "market" else "none"}

@@ -42,3 +42,17 @@ def test_capital_gain_definition_and_followup_go_to_tax(monkeypatch, model_unava
     assert router.workflow_router(followup)["selected_agent"] == "tax"
     assert router.workflow_router({**followup, "agent_override": "finance_qa"})["selected_agent"] == "finance_qa"
     assert router.workflow_router({**followup, "question": "What is an ETF?"})["selected_agent"] == "finance_qa"
+
+
+@pytest.mark.parametrize("question, expected", [
+    ("What is a Roth IRA?", "finance_qa"),
+    ("Are Roth IRA withdrawals taxable?", "tax"),
+    ("How are ETFs taxed?", "tax"),
+    ("What is a holding period?", "tax"),
+])
+def test_tax_and_finance_education_boundary(monkeypatch, question, expected):
+    model = Mock()
+    model.with_structured_output.return_value.invoke.return_value = {"agent": "finance_qa"}
+    monkeypatch.setattr(router, "get_llm", lambda: model)
+    assert router.workflow_router({"question": question, "selected_agent": "tax"})["selected_agent"] == expected
+    assert router.fallback_route(question, previous="tax") == expected
